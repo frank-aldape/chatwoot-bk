@@ -1,6 +1,15 @@
 class Email::BaseBuilder
   pattr_initialize [:inbox!]
 
+  # The header templates render "<name> <email>". Names with commas (common in
+  # company names) must be quoted, or the header parses as two addresses and
+  # the SMTP server rejects the envelope sender with a syntax error.
+  def self.quote_display_name(header, email)
+    address = Mail::Address.new(email)
+    address.display_name = header.delete_suffix("<#{email}>").strip
+    address.to_s
+  end
+
   private
 
   def channel
@@ -22,20 +31,21 @@ class Email::BaseBuilder
   def sender_name(sender_email)
     # Friendly: <agent_name> from <business_name>
     # Professional: <business_name>
-    if inbox.friendly?
-      I18n.t(
-        'conversations.reply.email.header.friendly_name',
-        sender_name: custom_sender_name,
-        business_name: business_name,
-        from_email: sender_email
-      )
-    else
-      I18n.t(
-        'conversations.reply.email.header.professional_name',
-        business_name: business_name,
-        from_email: sender_email
-      )
-    end
+    header = if inbox.friendly?
+               I18n.t(
+                 'conversations.reply.email.header.friendly_name',
+                 sender_name: custom_sender_name,
+                 business_name: business_name,
+                 from_email: sender_email
+               )
+             else
+               I18n.t(
+                 'conversations.reply.email.header.professional_name',
+                 business_name: business_name,
+                 from_email: sender_email
+               )
+             end
+    self.class.quote_display_name(header, sender_email)
   end
 
   def business_name

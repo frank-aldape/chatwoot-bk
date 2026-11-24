@@ -87,12 +87,13 @@ class ConversationReplyMailer < ApplicationMailer
   end
 
   def sender_name(sender_email)
-    if @inbox.friendly?
-      I18n.t('conversations.reply.email.header.friendly_name', sender_name: custom_sender_name, business_name: business_name,
-                                                               from_email: sender_email)
-    else
-      I18n.t('conversations.reply.email.header.professional_name', business_name: business_name, from_email: sender_email)
-    end
+    header = if @inbox.friendly?
+               I18n.t('conversations.reply.email.header.friendly_name', sender_name: custom_sender_name, business_name: business_name,
+                                                                        from_email: sender_email)
+             else
+               I18n.t('conversations.reply.email.header.professional_name', business_name: business_name, from_email: sender_email)
+             end
+    Email::BaseBuilder.quote_display_name(header, sender_email)
   end
 
   def current_message
