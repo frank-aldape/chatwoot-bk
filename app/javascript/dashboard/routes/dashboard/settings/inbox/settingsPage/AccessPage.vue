@@ -3,7 +3,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useStore, useMapGetter } from 'dashboard/composables/store.js';
 import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
-import SettingsSection from '../../../../../components/SettingsSection.vue';
+import SettingsSection from 'dashboard/components-next/settings/SettingsSection.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 const props = defineProps({

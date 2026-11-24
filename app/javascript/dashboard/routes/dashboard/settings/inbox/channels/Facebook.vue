@@ -5,7 +5,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { useAlert } from 'dashboard/composables';
 import { useAccount } from 'dashboard/composables/useAccount';
 import { required } from '@vuelidate/validators';
-import LoadingState from 'dashboard/components/widgets/LoadingState.vue';
+import LoadingState from 'dashboard/components-next/loading/LoadingState.vue';
 
 import ChannelApi from '../../../../../api/channels';
 import PageHeader from '../../SettingsSubPageHeader.vue';

@@ -5,7 +5,7 @@ import { useAlert } from 'dashboard/composables';
 import { useVuelidate } from '@vuelidate/core';
 import Avatar from 'next/avatar/Avatar.vue';
 import SettingIntroBanner from 'dashboard/components/widgets/SettingIntroBanner.vue';
-import SettingsSection from '../../../../components/SettingsSection.vue';
+import SettingsSection from 'dashboard/components-next/settings/SettingsSection.vue';
 import inboxMixin from 'shared/mixins/inboxMixin';
 import FacebookReauthorize from './facebook/Reauthorize.vue';
 import InstagramReauthorize from './channels/instagram/Reauthorize.vue';
@@ -28,6 +28,7 @@ import AccountHealth from './components/AccountHealth.vue';
 import { FEATURE_FLAGS } from '../../../../featureFlags';
 import SenderNameExamplePreview from './components/SenderNameExamplePreview.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import NextInput from 'dashboard/components-next/input/Input.vue';
 import { INBOX_TYPES } from 'dashboard/helper/inbox';
 import { getInboxIconByType } from 'dashboard/helper/inbox';
 import Editor from 'dashboard/components-next/Editor/Editor.vue';
@@ -50,6 +51,7 @@ export default {
     MicrosoftReauthorize,
     GoogleReauthorize,
     NextButton,
+    NextInput,
     InstagramReauthorize,
     TiktokReauthorize,
     WhatsappReauthorize,
@@ -652,17 +654,17 @@ export default {
               @delete="handleAvatarDelete"
             />
           </div>
-          <woot-input
+          <NextInput
             v-model="selectedInboxName"
             class="pb-4"
-            :class="{ error: v$.selectedInboxName.$error }"
             :label="inboxNameLabel"
             :placeholder="inboxNamePlaceHolder"
-            :error="
+            :message="
               v$.selectedInboxName.$error
                 ? $t('INBOX_MGMT.ADD.CHANNEL_NAME.ERROR')
                 : ''
             "
+            :message-type="v$.selectedInboxName.$error ? 'error' : 'info'"
             @blur="v$.selectedInboxName.$touch"
           />
           <div
@@ -683,7 +685,7 @@ export default {
               </p>
             </div>
 
-            <woot-input
+            <NextInput
               v-model="namingFunctionLabel"
               :label="
                 $t('INBOX_MGMT.SETTINGS_POPUP.NAMING_HELPER.FUNCTION_LABEL')
@@ -718,11 +720,10 @@ export default {
               />
             </div>
           </div>
-          <woot-input
+          <NextInput
             v-if="isAPIInbox"
             v-model="webhookUrl"
             class="pb-4"
-            :class="{ error: v$.webhookUrl.$error }"
             :label="
               $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_WEBHOOK_URL.LABEL')
             "
@@ -731,14 +732,15 @@ export default {
                 'INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_WEBHOOK_URL.PLACEHOLDER'
               )
             "
-            :error="
+            :message="
               v$.webhookUrl.$error
                 ? $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_WEBHOOK_URL.ERROR')
                 : ''
             "
+            :message-type="v$.webhookUrl.$error ? 'error' : 'info'"
             @blur="v$.webhookUrl.$touch"
           />
-          <woot-input
+          <NextInput
             v-if="isAWebWidgetInbox"
             v-model="channelWebsiteUrl"
             class="pb-4"
@@ -747,7 +749,7 @@ export default {
               $t('INBOX_MGMT.ADD.WEBSITE_CHANNEL.CHANNEL_DOMAIN.PLACEHOLDER')
             "
           />
-          <woot-input
+          <NextInput
             v-if="isAWebWidgetInbox"
             v-model="channelWelcomeTitle"
             class="pb-4"

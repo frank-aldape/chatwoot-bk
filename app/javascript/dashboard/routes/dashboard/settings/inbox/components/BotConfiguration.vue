@@ -1,8 +1,8 @@
 <script>
 import { mapGetters } from 'vuex';
 import { useAlert } from 'dashboard/composables';
-import SettingsSection from 'dashboard/components/SettingsSection.vue';
-import LoadingState from 'dashboard/components/widgets/LoadingState.vue';
+import SettingsSection from 'dashboard/components-next/settings/SettingsSection.vue';
+import LoadingState from 'dashboard/components-next/loading/LoadingState.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 
 export default {
