@@ -24,27 +24,9 @@ class Email::BaseBuilder
     @conversation ||= message.conversation
   end
 
-  def custom_sender_name
-    message&.sender&.available_name || I18n.t('conversations.reply.email.header.notifications')
-  end
-
+  # Always "<business_name> <email>": agent names never appear in the From header.
   def sender_name(sender_email)
-    # Friendly: <agent_name> from <business_name>
-    # Professional: <business_name>
-    header = if inbox.friendly?
-               I18n.t(
-                 'conversations.reply.email.header.friendly_name',
-                 sender_name: custom_sender_name,
-                 business_name: business_name,
-                 from_email: sender_email
-               )
-             else
-               I18n.t(
-                 'conversations.reply.email.header.professional_name',
-                 business_name: business_name,
-                 from_email: sender_email
-               )
-             end
+    header = I18n.t('conversations.reply.email.header.professional_name', business_name: business_name, from_email: sender_email)
     self.class.quote_display_name(header, sender_email)
   end
 
