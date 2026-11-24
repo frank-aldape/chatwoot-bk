@@ -184,6 +184,8 @@
     "SEARCH_PLACEHOLDER": "Buscar o ir a",
     "SECTIONS": {
       "GENERAL": "General",
+      "MAILBOXES": "Buzones",
+      "COMPANIES": "Empresas",
       "REPORTS": "Reportes",
       "CONVERSATION": "Conversación",
       "BULK_ACTIONS": "Acciones masivas",

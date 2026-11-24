@@ -9,6 +9,7 @@ import { useInboxHotKeys } from 'dashboard/composables/commands/useInboxHotKeys'
 import { useGoToCommandHotKeys } from 'dashboard/composables/commands/useGoToCommandHotKeys';
 import { useBulkActionsHotKeys } from 'dashboard/composables/commands/useBulkActionsHotKeys';
 import { useConversationHotKeys } from 'dashboard/composables/commands/useConversationHotKeys';
+import { useScopeHotKeys } from 'dashboard/composables/commands/useScopeHotKeys';
 import wootConstants from 'dashboard/constants/globals';
 import { GENERAL_EVENTS } from 'dashboard/helper/AnalyticsHelper/events';
 
@@ -27,12 +28,14 @@ const { inboxHotKeys } = useInboxHotKeys();
 const { goToCommandHotKeys } = useGoToCommandHotKeys();
 const { bulkActionsHotKeys } = useBulkActionsHotKeys();
 const { conversationHotKeys } = useConversationHotKeys();
+const { scopeHotKeys } = useScopeHotKeys();
 
 const placeholder = computed(() => t('COMMAND_BAR.SEARCH_PLACEHOLDER'));
 
 const hotKeys = computed(() => [
   ...inboxHotKeys.value,
   ...goToCommandHotKeys.value,
+  ...scopeHotKeys.value,
   ...goToAppearanceHotKeys.value,
   ...bulkActionsHotKeys.value,
   ...conversationHotKeys.value,
