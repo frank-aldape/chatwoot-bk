@@ -166,6 +166,7 @@ Rails.application.routes.draw do
             end
           end
           resources :managed_companies, only: [:index, :show, :create, :update, :destroy]
+          resources :email_inbox_provisions, only: [:create]
           resources :contacts, only: [:index, :show, :update, :create, :destroy] do
             collection do
               get :active

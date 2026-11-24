@@ -21,7 +21,19 @@ const hasError = computed(
   () => hasSubmitted.value && !selectedTeams.value.length
 );
 
-onMounted(() => store.dispatch('teams/get'));
+// Teams declaring this inbox's mailbox are linked on create; preselect them so
+// submitting this step (which replaces the team list) keeps those links.
+onMounted(async () => {
+  await Promise.all([
+    store.dispatch('teams/get'),
+    store.dispatch('inboxes/show', route.params.inbox_id),
+  ]);
+  const inbox = store.getters['inboxes/getInbox'](route.params.inbox_id);
+  const linkedIds = inbox.team_ids || [];
+  selectedTeams.value = teamList.value.filter(team =>
+    linkedIds.includes(team.id)
+  );
+});
 
 const addTeams = async () => {
   hasSubmitted.value = true;
