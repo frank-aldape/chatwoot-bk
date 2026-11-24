@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useStore, useMapGetter } from 'dashboard/composables/store.js';
 import { useAlert } from 'dashboard/composables';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 import PageHeader from '../SettingsSubPageHeader.vue';
 
 const store = useStore();
@@ -17,6 +18,15 @@ const isCreating = ref(false);
 const hasSubmitted = ref(false);
 
 const teamList = useMapGetter('teams/getTeams');
+const teamOptions = computed(() =>
+  teamList.value.map(team => ({ value: team.id, label: team.name }))
+);
+const selectedTeamIds = computed({
+  get: () => selectedTeams.value.map(team => team.id),
+  set: ids => {
+    selectedTeams.value = teamList.value.filter(team => ids.includes(team.id));
+  },
+});
 const hasError = computed(
   () => hasSubmitted.value && !selectedTeams.value.length
 );
@@ -68,26 +78,19 @@ const addTeams = async () => {
       </div>
       <div>
         <div class="w-full">
-          <label :class="{ error: hasError }">
+          <label class="block mb-1 text-sm font-medium text-n-slate-12">
             {{ t('INBOX_MGMT.ADD.TEAMS.TITLE') }}
-            <multiselect
-              v-model="selectedTeams"
-              :options="teamList"
-              track-by="id"
-              label="name"
-              multiple
-              :close-on-select="false"
-              :clear-on-select="false"
-              hide-selected
-              selected-label
-              :select-label="t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
-              :deselect-label="t('FORMS.MULTISELECT.ENTER_TO_REMOVE')"
-              :placeholder="t('INBOX_MGMT.ADD.TEAMS.PICK_TEAMS')"
-            />
-            <span v-if="hasError" class="message">
-              {{ t('INBOX_MGMT.ADD.TEAMS.VALIDATION_ERROR') }}
-            </span>
           </label>
+          <TagMultiSelectComboBox
+            v-model="selectedTeamIds"
+            :options="teamOptions"
+            :placeholder="t('INBOX_MGMT.ADD.TEAMS.PICK_TEAMS')"
+            :has-error="hasError"
+            :message="
+              hasError ? t('INBOX_MGMT.ADD.TEAMS.VALIDATION_ERROR') : ''
+            "
+            class="mb-4"
+          />
         </div>
         <div class="w-full">
           <NextButton

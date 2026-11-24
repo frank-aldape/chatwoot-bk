@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
 import SettingsSection from 'dashboard/components-next/settings/SettingsSection.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import TagMultiSelectComboBox from 'dashboard/components-next/combobox/TagMultiSelectComboBox.vue';
 
 const props = defineProps({
   inbox: {
@@ -21,6 +22,16 @@ const isUpdating = ref(false);
 
 const teamList = useMapGetter('teams/getTeams');
 const agentList = useMapGetter('agents/getAgents');
+
+const teamOptions = computed(() =>
+  teamList.value.map(team => ({ value: team.id, label: team.name }))
+);
+const selectedTeamIds = computed({
+  get: () => selectedTeams.value.map(team => team.id),
+  set: ids => {
+    selectedTeams.value = teamList.value.filter(team => ids.includes(team.id));
+  },
+});
 
 const syncSelectedTeams = () => {
   const teamIds = props.inbox.team_ids || [];
@@ -75,19 +86,11 @@ const updateTeams = async () => {
       :title="t('INBOX_MGMT.SETTINGS_POPUP.INBOX_TEAMS')"
       :sub-title="t('INBOX_MGMT.SETTINGS_POPUP.INBOX_TEAMS_SUB_TEXT')"
     >
-      <multiselect
-        v-model="selectedTeams"
-        :options="teamList"
-        track-by="id"
-        label="name"
-        multiple
-        :close-on-select="false"
-        :clear-on-select="false"
-        hide-selected
+      <TagMultiSelectComboBox
+        v-model="selectedTeamIds"
+        :options="teamOptions"
         :placeholder="t('FORMS.MULTISELECT.SELECT')"
-        selected-label
-        :select-label="t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
-        :deselect-label="t('FORMS.MULTISELECT.ENTER_TO_REMOVE')"
+        class="mb-4"
       />
 
       <NextButton

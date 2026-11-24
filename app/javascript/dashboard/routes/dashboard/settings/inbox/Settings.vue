@@ -29,12 +29,14 @@ import { FEATURE_FLAGS } from '../../../../featureFlags';
 import SenderNameExamplePreview from './components/SenderNameExamplePreview.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import NextInput from 'dashboard/components-next/input/Input.vue';
+import TabBar from 'dashboard/components-next/tabbar/TabBar.vue';
 import { INBOX_TYPES } from 'dashboard/helper/inbox';
 import { getInboxIconByType } from 'dashboard/helper/inbox';
 import Editor from 'dashboard/components-next/Editor/Editor.vue';
 
 export default {
   components: {
+    TabBar,
     BotConfiguration,
     AccessPage,
     InboxRoutingSettings,
@@ -116,6 +118,9 @@ export default {
         return this.$t('INBOX_MGMT.ADD.WHATSAPP.PROVIDERS.TWILIO');
       }
       return '';
+    },
+    tabBarTabs() {
+      return this.tabs.map(tab => ({ ...tab, label: tab.name }));
     },
     tabs() {
       let visibleToAllChannelTabs = [
@@ -430,6 +435,9 @@ export default {
       )
         this.avatarUrl = this.inbox.avatar_url;
     },
+    onTabBarChange(tab) {
+      this.onTabChange(this.tabs.findIndex(({ key }) => key === tab.key));
+    },
     onTabChange(selectedTabIndex) {
       this.selectedTabIndex = selectedTabIndex;
       this.refreshAvatarUrlOnTabChange(selectedTabIndex);
@@ -601,21 +609,13 @@ export default {
       :header-image="inbox.avatarUrl"
       :header-title="inboxName"
     >
-      <woot-tabs
-        class="[&_ul]:p-0"
-        :index="selectedTabIndex"
-        :border="false"
-        @change="onTabChange"
-      >
-        <woot-tabs-item
-          v-for="(tab, index) in tabs"
-          :key="tab.key"
-          :index="index"
-          :name="tab.name"
-          :show-badge="false"
-          is-compact
+      <div class="max-w-full overflow-x-auto">
+        <TabBar
+          :tabs="tabBarTabs"
+          :initial-active-tab="selectedTabIndex"
+          @tab-changed="onTabBarChange"
         />
-      </woot-tabs>
+      </div>
     </SettingIntroBanner>
     <section class="mx-auto w-full max-w-6xl">
       <MicrosoftReauthorize v-if="microsoftUnauthorized" :inbox="inbox" />
