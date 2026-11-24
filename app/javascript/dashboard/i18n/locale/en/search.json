@@ -22,6 +22,7 @@
     "PLACEHOLDER_KEYBINDING": "/ para enfocar",
     "INPUT_PLACEHOLDER": "Escribe 3 o más caracteres para buscar",
     "RECENT_SEARCHES": "Búsquedas recientes",
+    "FILTER_HINT": "Combina filtros con texto, por ejemplo buzón:facturacion empresa:acemty factura 4471",
     "CLEAR_ALL": "Borrar todo",
     "MOST_RECENT": "Más reciente",
     "EMPTY_STATE_DEFAULT": "Busca por ID de conversación, correo electrónico, número de teléfono o mensajes para obtener mejores resultados. ",

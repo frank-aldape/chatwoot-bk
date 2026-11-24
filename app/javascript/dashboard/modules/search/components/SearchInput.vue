@@ -9,6 +9,16 @@ const searchQuery = defineModel({
   type: String,
   default: '',
 });
+// Filter keys understood by Search::QueryParser; clicking one inserts it.
+const FILTER_KEYS = [
+  'buzón:',
+  'empresa:',
+  'asignado:',
+  'equipo:',
+  'etiqueta:',
+  'estado:',
+  'prioridad:',
+];
 const isInputFocused = ref(false);
 const showRecentSearches = ref(false);
 const searchInput = useTemplateRef('searchInput');
@@ -56,6 +66,12 @@ const onSelectRecentSearch = query => {
   searchQuery.value = query;
   emit('selectRecentSearch', query);
   showRecentSearches.value = false;
+  searchInput.value.focus();
+};
+
+const insertFilter = key => {
+  const current = searchQuery.value.trimEnd();
+  searchQuery.value = current ? `${current} ${key}` : key;
   searchInput.value.focus();
 };
 
@@ -125,6 +141,22 @@ onUnmounted(() => {
       "
     >
       <div class="overflow-hidden w-full">
+        <div class="flex flex-col gap-2 px-4 py-3">
+          <p class="m-0 text-sm text-n-slate-11">
+            {{ $t('SEARCH.FILTER_HINT') }}
+          </p>
+          <div class="flex flex-wrap gap-1.5">
+            <button
+              v-for="key in FILTER_KEYS"
+              :key="key"
+              type="button"
+              class="px-2 py-1 text-xs font-medium rounded-md bg-n-alpha-2 text-n-slate-12 hover:bg-n-alpha-3"
+              @mousedown.prevent="insertFilter(key)"
+            >
+              {{ key }}
+            </button>
+          </div>
+        </div>
         <RecentSearches
           ref="recentSearchesRef"
           @select-search="onSelectRecentSearch"

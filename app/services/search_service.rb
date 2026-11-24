@@ -81,8 +81,24 @@ class SearchService
     ).perform
   end
 
+  # Free text only; `key:value` filters (buzón:, empresa:, ...) are split out by
+  # Search::QueryParser and applied as AND conditions on the conversations.
+  def parsed_query
+    @parsed_query ||= Search::QueryParser.parse(params[:q])
+  end
+
   def search_query
-    @search_query ||= params[:q].to_s.strip
+    parsed_query.text
+  end
+
+  def query_filters
+    parsed_query.filters
+  end
+
+  def filtered(conversations)
+    return conversations if query_filters.empty?
+
+    Search::ConversationFilters.new(scope: conversations, filters: query_filters, account: current_account, user: current_user).perform
   end
 
   # Epoch when unbounded, so the SQL keeps one shape either way.
@@ -99,9 +115,11 @@ class SearchService
   end
 
   def filter_conversations
-    conversations_query = accessible_conversations
+    conversations_query = filtered(accessible_conversations)
 
-    conversations_query = if use_gin_search
+    conversations_query = if search_query.blank?
+                            conversations_query
+                          elsif use_gin_search
                             conversations_query.search_by_term(search_query)
                           else
                             conversations_query.joins('LEFT JOIN contacts ON conversations.contact_id = contacts.id')
@@ -113,7 +131,7 @@ class SearchService
                                               'conversations.last_activity_at')
     end
 
-    conversations_query = conversations_query.order('conversations.created_at DESC') unless use_gin_search
+    conversations_query = conversations_query.order('conversations.created_at DESC') unless use_gin_search && search_query.present?
 
     @conversations = conversations_query.page(params[:page]).per(15)
   end
@@ -135,8 +153,9 @@ class SearchService
     use_gin_search ? filter_messages_with_gin : filter_messages_with_like
   end
 
+  # Elasticsearch knows nothing about the query filters, so filtered searches use SQL.
   def should_run_advanced_search?
-    ChatwootApp.advanced_search_allowed? && current_account.feature_enabled?('advanced_search')
+    ChatwootApp.advanced_search_allowed? && current_account.feature_enabled?('advanced_search') && query_filters.empty?
   end
 
   def advanced_search; end
@@ -155,10 +174,9 @@ class SearchService
   def filter_messages_with_like
     base_query = message_base_query
     base_query = apply_message_filters(base_query)
-    base_query.joins(:conversation)
-              .joins('LEFT JOIN contacts ON conversations.contact_id = contacts.id')
-              .where(MESSAGE_CONDITIONS, search_conditions)
-              .reorder('messages.created_at DESC')
+    base_query = base_query.joins(:conversation).joins('LEFT JOIN contacts ON conversations.contact_id = contacts.id')
+    base_query = base_query.where(MESSAGE_CONDITIONS, search_conditions) if search_query.present?
+    base_query.reorder('messages.created_at DESC')
               .page(params[:page])
               .per(15)
   end
@@ -167,6 +185,7 @@ class SearchService
     query = current_account.messages
     query = query.where('messages.created_at >= ?', message_since) if self.class.message_search_window
     query = query.where(conversation_id: accessible_conversations.select(:id)) unless should_skip_inbox_filtering?
+    query = query.where(conversation_id: filtered(current_account.conversations).select(:id)) if query_filters.any?
     query
   end
 
@@ -217,7 +236,14 @@ class SearchService
     current_account.feature_enabled?('search_with_gin')
   end
 
+  # Contacts and articles have no mailbox or company: a filters-only query finds none.
+  def filters_only?
+    search_query.blank? && query_filters.any?
+  end
+
   def filter_contacts
+    return @contacts = current_account.contacts.none.page(params[:page]).per(15) if filters_only?
+
     contacts_query = current_account.contacts.accessible_to(@current_user).where(
       "contacts.name ILIKE :search OR contacts.email ILIKE :search OR contacts.phone_number ILIKE :search
        OR contacts.identifier ILIKE :search OR contacts.additional_attributes ->> 'company_name' ILIKE :search
@@ -233,6 +259,8 @@ class SearchService
   end
 
   def filter_articles
+    return @articles = current_account.articles.none.page(params[:page]).per(15) if filters_only?
+
     articles_query = current_account.articles.text_search(search_query)
     articles_query = apply_time_filter(articles_query, 'updated_at') if current_account.feature_enabled?('advanced_search')
 
