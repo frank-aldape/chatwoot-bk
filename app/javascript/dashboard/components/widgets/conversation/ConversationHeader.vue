@@ -12,7 +12,9 @@ import wootConstants from 'dashboard/constants/globals';
 import { conversationListPageURL } from 'dashboard/helper/URLHelper';
 import { snoozedReopenTime } from 'dashboard/helper/snoozeHelpers';
 import { useInbox } from 'dashboard/composables/useInbox';
+import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
+import Button from 'dashboard/components-next/button/Button.vue';
 
 const props = defineProps({
   chat: {
@@ -101,6 +103,25 @@ const hasMultipleInboxes = computed(
 );
 
 const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
+
+const currentUser = computed(() => store.getters.getCurrentUser);
+const isAssignedToMe = computed(
+  () => currentChat.value?.meta?.assignee?.id === currentUser.value?.id
+);
+
+const takeConversation = async () => {
+  const { avatar_url: thumbnail, ...agent } = currentUser.value;
+  store.dispatch('setCurrentChatAssignee', { ...agent, thumbnail });
+  try {
+    await store.dispatch('assignAgent', {
+      conversationId: currentChat.value.id,
+      agentId: agent.id,
+    });
+    useAlert(t('CONVERSATION.CHANGE_AGENT'));
+  } catch {
+    useAlert(t('CONVERSATION.CHANGE_AGENT_FAILED'));
+  }
+};
 </script>
 
 <template>
@@ -168,6 +189,13 @@ const hasSlaPolicyId = computed(() => props.chat?.sla_policy_id);
         show-extended-info
         :parent-width="width"
         class="hidden md:flex"
+      />
+      <Button
+        v-if="!isAssignedToMe"
+        :label="$t('CONVERSATION.HEADER.TAKE_CONVERSATION')"
+        icon="i-lucide-hand"
+        size="sm"
+        @click="takeConversation"
       />
       <MoreActions :conversation-id="currentChat.id" />
     </div>

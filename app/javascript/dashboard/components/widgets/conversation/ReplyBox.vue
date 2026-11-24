@@ -1133,6 +1133,7 @@ export default {
       />
       <ReplyEmailHead
         v-if="showReplyHead"
+        :from-email="inbox.email"
         v-model:cc-emails="ccEmails"
         v-model:bcc-emails="bccEmails"
         v-model:to-emails="toEmails"

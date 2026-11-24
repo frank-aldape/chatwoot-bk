@@ -95,6 +95,7 @@
       "SNOOZED_UNTIL_TOMORROW": "Pausada hasta mañana",
       "SNOOZED_UNTIL_NEXT_WEEK": "Pausada hasta la próxima semana",
       "SNOOZED_UNTIL_NEXT_REPLY": "Pausada hasta la próxima respuesta",
+      "TAKE_CONVERSATION": "Tomar conversación",
       "SLA_STATUS": {
         "FRT": "FRT {status}",
         "NRT": "NRT {status}",
@@ -208,6 +209,7 @@
       "": "",
       "EMAIL_HEAD": {
         "TO": "PARA",
+        "FROM": "Respondiendo desde {email}",
         "ADD_BCC": "Agregar CCO",
         "CC": {
           "LABEL": "CC",

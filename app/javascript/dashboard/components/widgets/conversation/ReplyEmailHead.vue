@@ -8,6 +8,10 @@ export default {
     ButtonV4,
   },
   props: {
+    fromEmail: {
+      type: String,
+      default: '',
+    },
     ccEmails: {
       type: String,
       default: '',
@@ -88,6 +92,15 @@ export default {
 
 <template>
   <div>
+    <div
+      v-if="fromEmail"
+      class="flex items-center gap-1 py-1 text-xs text-n-slate-11 border-b border-n-weak"
+    >
+      <span class="i-lucide-send size-3 flex-shrink-0" />
+      <span class="truncate">
+        {{ $t('CONVERSATION.REPLYBOX.EMAIL_HEAD.FROM', { email: fromEmail }) }}
+      </span>
+    </div>
     <div v-if="toEmails">
       <div class="input-group small" :class="{ error: v$.toEmailsVal.$error }">
         <label class="input-group-label">
