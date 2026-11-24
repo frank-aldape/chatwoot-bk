@@ -617,20 +617,9 @@
       },
       "SENDER_NAME_SECTION": {
         "TITLE": "Nombre del remitente",
-        "SUB_TEXT": "Selecciona el nombre que se muestra a tu cliente cuando recibe correos de tus agentes.",
-        "FOR_EG": "Por ejemplo:",
-        "FRIENDLY": {
-          "TITLE": "Cercano",
-          "FROM": "de",
-          "SUBTITLE": "Agrega el nombre del agente que envió la respuesta en el nombre del remitente para hacerlo más cercano."
-        },
-        "PROFESSIONAL": {
-          "TITLE": "Profesional",
-          "SUBTITLE": "Usa solo el nombre configurado del negocio como remitente en el encabezado del correo."
-        },
+        "SUB_TEXT": "Los correos salen como \"Razón social\" <correo del inbox>. Nunca se muestra el nombre del agente.",
         "BUSINESS_NAME": {
-          "BUTTON_TEXT": "+ Configurar el nombre de tu negocio",
-          "PLACEHOLDER": "Ingresa el nombre de tu negocio",
+          "PLACEHOLDER": "Razón social",
           "SAVE_BUTTON_TEXT": "Guardar"
         }
       },

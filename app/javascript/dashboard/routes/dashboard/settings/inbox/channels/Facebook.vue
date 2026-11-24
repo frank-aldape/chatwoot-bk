@@ -12,6 +12,7 @@ import PageHeader from '../../SettingsSubPageHeader.vue';
 import router from '../../../../index';
 import { useBranding } from 'shared/composables/useBranding';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 import ManagedCompanyNamingFields from '../components/ManagedCompanyNamingFields.vue';
 
 import { loadScript } from 'dashboard/helper/DOMHelpers';
@@ -23,6 +24,7 @@ export default {
     PageHeader,
     NextButton,
     ManagedCompanyNamingFields,
+    ComboBox,
   },
   setup() {
     const { accountId } = useAccount();
@@ -71,6 +73,22 @@ export default {
     },
     getSelectablePages() {
       return this.pageList.filter(item => !item.exists);
+    },
+    pageOptions() {
+      return this.getSelectablePages.map(page => ({
+        value: page.id,
+        label: page.name,
+      }));
+    },
+    selectedPageId: {
+      get() {
+        return this.selectedPage?.id || '';
+      },
+      set(id) {
+        const page = this.pageList.find(item => item.id === id);
+        this.selectedPage = page;
+        this.setPageName(page);
+      },
     },
   },
 
@@ -259,18 +277,12 @@ export default {
           <div class="w-full">
             <div class="input-wrap" :class="{ error: v$.selectedPage.$error }">
               {{ $t('INBOX_MGMT.ADD.FB.CHOOSE_PAGE') }}
-              <multiselect
-                v-model="selectedPage"
-                close-on-select
-                allow-empty
-                :options="getSelectablePages"
-                track-by="id"
-                label="name"
-                :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
-                :deselect-label="$t('FORMS.MULTISELECT.ENTER_TO_REMOVE')"
+              <ComboBox
+                v-model="selectedPageId"
+                :options="pageOptions"
                 :placeholder="$t('INBOX_MGMT.ADD.FB.PICK_A_VALUE')"
-                selected-label
-                @select="setPageName"
+                :has-error="v$.selectedPage.$error"
+                class="mt-1"
               />
               <span v-if="v$.selectedPage.$error" class="message">
                 {{ $t('INBOX_MGMT.ADD.FB.CHOOSE_PLACEHOLDER') }}

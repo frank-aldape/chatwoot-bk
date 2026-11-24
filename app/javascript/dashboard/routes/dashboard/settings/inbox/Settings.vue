@@ -26,7 +26,6 @@ import WidgetBuilder from './WidgetBuilder.vue';
 import BotConfiguration from './components/BotConfiguration.vue';
 import AccountHealth from './components/AccountHealth.vue';
 import { FEATURE_FLAGS } from '../../../../featureFlags';
-import SenderNameExamplePreview from './components/SenderNameExamplePreview.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import NextInput from 'dashboard/components-next/input/Input.vue';
 import TabBar from 'dashboard/components-next/tabbar/TabBar.vue';
@@ -49,7 +48,6 @@ export default {
     SettingsSection,
     WeeklyAvailability,
     WidgetBuilder,
-    SenderNameExamplePreview,
     MicrosoftReauthorize,
     GoogleReauthorize,
     NextButton,
@@ -73,7 +71,6 @@ export default {
       greetingEnabled: true,
       greetingMessage: '',
       emailCollectEnabled: false,
-      senderNameType: 'friendly',
       businessName: '',
       locktoSingleConversation: false,
       allowMessagesAfterResolved: true,
@@ -88,7 +85,6 @@ export default {
       replyTime: '',
       selectedTabIndex: 0,
       selectedPortalSlug: '',
-      showBusinessNameInput: false,
       healthData: null,
       isLoadingHealth: false,
       healthError: null,
@@ -480,7 +476,6 @@ export default {
         this.greetingEnabled = this.inbox.greeting_enabled || false;
         this.greetingMessage = this.inbox.greeting_message || '';
         this.emailCollectEnabled = this.inbox.enable_email_collect;
-        this.senderNameType = this.inbox.sender_name_type;
         this.businessName = this.inbox.business_name;
         this.allowMessagesAfterResolved =
           this.inbox.allow_messages_after_resolved;
@@ -514,7 +509,7 @@ export default {
               ).id
             : null,
           lock_to_single_conversation: this.locktoSingleConversation,
-          sender_name_type: this.senderNameType,
+          sender_name_type: 'professional',
           business_name: this.businessName || null,
           channel: {
             widget_color: this.inbox.widget_color,
@@ -555,17 +550,6 @@ export default {
             ? error.message
             : this.$t('INBOX_MGMT.DELETE.API.AVATAR_ERROR_MESSAGE')
         );
-      }
-    },
-    toggleSenderNameType(key) {
-      this.senderNameType = key;
-    },
-    onClickShowBusinessNameInput() {
-      this.showBusinessNameInput = !this.showBusinessNameInput;
-      if (this.showBusinessNameInput) {
-        this.$nextTick(() => {
-          this.$refs.businessNameInput.focus();
-        });
       }
     },
     extractOperationalLabel(currentName) {
@@ -1015,51 +999,31 @@ export default {
           :sub-title="$t('INBOX_MGMT.EDIT.SENDER_NAME_SECTION.SUB_TEXT')"
           :show-border="false"
         >
-          <div class="pb-4">
-            <SenderNameExamplePreview
-              :sender-name-type="senderNameType"
-              :business-name="businessName"
-              @update="toggleSenderNameType"
+          <div class="flex gap-2 pb-4 w-[80%]">
+            <input
+              v-model="businessName"
+              :aria-label="
+                $t(
+                  'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.PLACEHOLDER'
+                )
+              "
+              :placeholder="
+                $t(
+                  'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.PLACEHOLDER'
+                )
+              "
+              class="mb-0"
+              type="text"
             />
-            <div class="flex flex-col gap-2 items-start mt-2">
-              <NextButton
-                ghost
-                blue
-                :label="
-                  $t(
-                    'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.BUTTON_TEXT'
-                  )
-                "
-                @click="onClickShowBusinessNameInput"
-              />
-              <div v-if="showBusinessNameInput" class="flex gap-2 w-[80%]">
-                <input
-                  ref="businessNameInput"
-                  v-model="businessName"
-                  :aria-label="
-                    $t(
-                      'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.PLACEHOLDER'
-                    )
-                  "
-                  :placeholder="
-                    $t(
-                      'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.PLACEHOLDER'
-                    )
-                  "
-                  class="mb-0"
-                  type="text"
-                />
-                <NextButton
-                  :label="
-                    $t(
-                      'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.SAVE_BUTTON_TEXT'
-                    )
-                  "
-                  class="flex-shrink-0"
-                  @click="updateInbox"
-                />
-              </div>
-            </div>
+            <NextButton
+              :label="
+                $t(
+                  'INBOX_MGMT.EDIT.SENDER_NAME_SECTION.BUSINESS_NAME.SAVE_BUTTON_TEXT'
+                )
+              "
+              class="flex-shrink-0"
+              @click="updateInbox"
+            />
           </div>
         </SettingsSection>
         <InboxRoutingSettings :inbox="inbox" />
