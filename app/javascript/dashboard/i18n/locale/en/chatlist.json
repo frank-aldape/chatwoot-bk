@@ -156,5 +156,18 @@
     "SHOW_QUOTED_TEXT": "Mostrar texto citado",
     "MESSAGE_READ": "Leído",
     "SENDING": "Enviando"
+  },
+  "WORKLOAD": {
+    "TITLE": "Carga por empresa y buzón",
+    "SEARCH": "Buscar empresa…",
+    "COMPANY": "Empresa",
+    "TOTAL": "Total",
+    "EMPTY": "No hay conversaciones abiertas.",
+    "KPI": {
+      "OPEN": "Abiertas",
+      "UNASSIGNED": "Sin asignar",
+      "COMPANIES": "Empresas con pendientes",
+      "BUSIEST_MAILBOX": "Buzón más cargado"
+    }
   }
 }

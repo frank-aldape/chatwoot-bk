@@ -242,20 +242,24 @@ const menuItems = computed(() => {
           activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
           children: mailboxSidebarItems.value,
         },
-        ...(companySidebarItems.value.length
-          ? [
-              {
-                name: 'Managed Companies',
-                label: t('SIDEBAR.COMPANIES_WITH_PENDING'),
-                icon: 'i-lucide-building-2',
-                activeOn: [
-                  'managed_company_conversations',
-                  'conversations_through_managed_company',
-                ],
-                children: companySidebarItems.value,
-              },
-            ]
-          : []),
+        {
+          name: 'Managed Companies',
+          label: t('SIDEBAR.COMPANIES_WITH_PENDING'),
+          icon: 'i-lucide-building-2',
+          activeOn: [
+            'managed_company_conversations',
+            'conversations_through_managed_company',
+            'conversation_workload',
+          ],
+          children: [
+            ...companySidebarItems.value,
+            {
+              name: 'conversation-workload',
+              label: t('SIDEBAR.VIEW_ALL_COMPANIES'),
+              to: accountScopedRoute('conversation_workload'),
+            },
+          ],
+        },
         {
           name: 'Channels',
           label: t('SIDEBAR.CHANNELS'),

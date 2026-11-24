@@ -134,6 +134,14 @@ export default {
       }),
     },
     {
+      path: frontendURL('accounts/:accountId/workload'),
+      name: 'conversation_workload',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: () => import('./WorkloadView.vue'),
+    },
+    {
       path: frontendURL('accounts/:accountId/mailboxes/:mailbox'),
       name: 'mailbox_conversations',
       meta: {

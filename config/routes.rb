@@ -121,6 +121,7 @@ Rails.application.routes.draw do
               get :meta
               get :search
               get :sidebar_counts
+              get :load_matrix
               post :filter
             end
             scope module: :conversations do

@@ -128,6 +128,10 @@ class ConversationApi extends ApiClient {
     return axios.get(`${this.url}/sidebar_counts`);
   }
 
+  loadMatrix() {
+    return axios.get(`${this.url}/load_matrix`);
+  }
+
   sendEmailTranscript({ conversationId, email }) {
     return axios.post(`${this.url}/${conversationId}/transcript`, { email });
   }

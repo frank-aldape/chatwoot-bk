@@ -10,6 +10,17 @@ class Conversations::SidebarCountsService
     { mailboxes: mailbox_counts, companies: company_counts }
   end
 
+  # Open conversations per company x mailbox for the workload page.
+  def load_matrix
+    scope = open_conversations.joins(inbox: :managed_company).joins(CHANNEL_EMAIL_JOIN)
+                              .group('managed_companies.id', 'managed_companies.name', Arel.sql(MAILBOX_SQL))
+    unassigned = scope.where(assignee_id: nil).count
+
+    scope.count.map do |(id, name, mailbox), count|
+      { company_id: id, company_name: name, mailbox: mailbox, count: count, unassigned: unassigned[[id, name, mailbox]] || 0 }
+    end
+  end
+
   private
 
   def open_conversations

@@ -3,7 +3,7 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
   include DateRangeHelper
   include HmacConcern
 
-  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :sidebar_counts]
+  before_action :conversation, except: [:index, :meta, :search, :create, :filter, :sidebar_counts, :load_matrix]
   before_action :inbox, :contact, :contact_inbox, only: [:create]
 
   ATTACHMENT_RESULTS_PER_PAGE = 100
@@ -21,6 +21,10 @@ class Api::V1::Accounts::ConversationsController < Api::V1::Accounts::BaseContro
 
   def sidebar_counts
     render json: Conversations::SidebarCountsService.new(user: Current.user, account: Current.account).perform
+  end
+
+  def load_matrix
+    render json: Conversations::SidebarCountsService.new(user: Current.user, account: Current.account).load_matrix
   end
 
   def search
