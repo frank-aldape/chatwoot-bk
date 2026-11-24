@@ -629,6 +629,17 @@ RSpec.describe 'Inboxes API', type: :request do
       let(:email_channel) { create(:channel_email, account: account) }
       let(:email_inbox) { create(:inbox, channel: email_channel, account: account) }
 
+      it 'returns ok and syncs the integration slot after a channel update' do
+        patch "/api/v1/accounts/#{account.id}/inboxes/#{email_inbox.id}",
+              headers: admin.create_new_auth_token,
+              params: { channel: { smtp_enabled: false, smtp_address: 'smtp.example.com' } },
+              as: :json
+
+        expect(response).to have_http_status(:ok)
+        expect(email_channel.reload.smtp_address).to eq('smtp.example.com')
+        expect(email_inbox.reload.integration_slot).to be_nil
+      end
+
       it 'updates smtp configuration with starttls encryption' do
         smtp_connection = double
         allow(smtp_connection).to receive(:start).and_return(true)

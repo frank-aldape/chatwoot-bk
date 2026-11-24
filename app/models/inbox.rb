@@ -215,6 +215,15 @@ class Inbox < ApplicationRecord
     account.feature_enabled?('assignment_v2')
   end
 
+  def managed_company_integration_slot
+    return 'instagram' if instagram?
+    return 'facebook' if facebook?
+    return 'whatsapp' if whatsapp? || twilio_whatsapp?
+    return 'linkedin' if linkedin_bridge?
+
+    nil
+  end
+
   private
 
   def default_name_for_blank_name
@@ -281,15 +290,6 @@ class Inbox < ApplicationRecord
                       .any? { |existing| existing.managed_company_integration_slot == integration_slot }
 
     errors.add(:managed_company_id, "already has a #{integration_slot.humanize(capitalize: false)} inbox assigned") if conflict
-  end
-
-  def managed_company_integration_slot
-    return 'instagram' if instagram?
-    return 'facebook' if facebook?
-    return 'whatsapp' if whatsapp? || twilio_whatsapp?
-    return 'linkedin' if linkedin_bridge?
-
-    nil
   end
 
   def sync_integration_slot
