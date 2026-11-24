@@ -16,6 +16,7 @@ import SidebarProfileMenu from './SidebarProfileMenu.vue';
 import SidebarChangelogCard from './SidebarChangelogCard.vue';
 import ChannelLeaf from './ChannelLeaf.vue';
 import CountLeaf from './CountLeaf.vue';
+import { MAILBOXES, mailboxLabelKey } from 'dashboard/constants/mailboxes';
 import ConversationApi from 'dashboard/api/inbox/conversation';
 import { useIntervalFn } from '@vueuse/core';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
@@ -86,20 +87,6 @@ const sortedInboxes = computed(() =>
   inboxes.value.slice().sort((a, b) => a.name.localeCompare(b.name))
 );
 
-// Base mailbox aliases every company domain gets, in this fixed order.
-const MAILBOXES = [
-  'facturacion',
-  'ventas',
-  'compras',
-  'atencion',
-  'contacto',
-  'administracion',
-  'operaciones',
-  'contabilidad',
-  'sistemas',
-  'no-reply',
-];
-
 const sidebarCounts = ref({ mailboxes: {}, companies: [] });
 const fetchSidebarCounts = async () => {
   try {
@@ -123,9 +110,7 @@ const countLeaf = (count, icon) => leafProps =>
 const mailboxSidebarItems = computed(() =>
   MAILBOXES.map(mailbox => ({
     name: `mailbox-${mailbox}`,
-    label: t(
-      `SIDEBAR.MAILBOX_NAMES.${mailbox.toUpperCase().replace('-', '_')}`
-    ),
+    label: t(mailboxLabelKey(mailbox)),
     to: accountScopedRoute('mailbox_conversations', { mailbox }),
     activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
     component: countLeaf(sidebarCounts.value.mailboxes[mailbox] || 0),

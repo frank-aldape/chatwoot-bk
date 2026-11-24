@@ -22,6 +22,7 @@ import {
 // https://tanstack.com/virtual/latest/docs/framework/vue/examples/variable
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
 import ChatListHeader from './ChatListHeader.vue';
+import ConversationScopeFilters from './ConversationScopeFilters.vue';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import ConversationFilter from 'next/filter/ConversationFilter.vue';
 import ConversationActiveFiltersPreview from 'next/filter/ConversationActiveFiltersPreview.vue';
@@ -1226,6 +1227,10 @@ watch(conversationFilters, (newVal, oldVal) => {
         </button>
       </div>
     </div>
+    <ConversationScopeFilters
+      :managed-company-id="managedCompanyId"
+      :mailbox="mailbox"
+    />
 
     <TeleportWithDirection
       v-if="showAddFoldersModal"

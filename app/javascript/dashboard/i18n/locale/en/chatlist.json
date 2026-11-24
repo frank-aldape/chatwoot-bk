@@ -10,6 +10,12 @@
     "TAB_HEADING": "Conversaciones",
     "MENTION_HEADING": "Menciones",
     "UNATTENDED_HEADING": "Sin atender",
+    "SCOPE_FILTERS": {
+      "ALL": "Todas",
+      "COMPANY": "Empresa",
+      "MAILBOX": "Buzón",
+      "SEARCH_COMPANY": "Buscar empresa…"
+    },
     "MAILBOX_TITLE": "Buzón: {mailbox}",
     "MANAGED_COMPANY": {
       "FALLBACK_TITLE": "Compañía gestionada",
