@@ -4,12 +4,27 @@ import { computed, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import ConversationApi from 'dashboard/api/inbox/conversation';
+import { useUISettings } from 'dashboard/composables/useUISettings';
 import { MAILBOXES, mailboxLabelKey } from 'dashboard/constants/mailboxes';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
 
 const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
+
+const { uiSettings, updateUISettings } = useUISettings();
+const pinnedIds = computed(() =>
+  (uiSettings.value.pinned_company_ids || []).map(String)
+);
+const isPinned = companyId => pinnedIds.value.includes(String(companyId));
+const togglePin = companyId => {
+  const id = String(companyId);
+  updateUISettings({
+    pinned_company_ids: isPinned(id)
+      ? pinnedIds.value.filter(pinnedId => pinnedId !== id)
+      : [...pinnedIds.value, id],
+  });
+};
 
 const rows = ref([]);
 const isLoading = ref(true);
@@ -157,6 +172,19 @@ const openCompany = companyId => {
             @click="openCompany(company.id)"
           >
             <td class="px-3 py-2 truncate max-w-64 text-n-slate-12">
+              <button
+                type="button"
+                class="ltr:mr-2 rtl:ml-2 align-middle"
+                :class="
+                  isPinned(company.id)
+                    ? 'text-n-amber-10'
+                    : 'text-n-slate-8 hover:text-n-slate-11'
+                "
+                :title="$t('WORKLOAD.PIN')"
+                @click.stop="togglePin(company.id)"
+              >
+                <span class="i-lucide-star size-4 block" />
+              </button>
               {{ company.name }}
             </td>
             <td

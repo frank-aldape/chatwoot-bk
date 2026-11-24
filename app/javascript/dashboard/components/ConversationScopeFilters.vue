@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import { vOnClickOutside } from '@vueuse/components';
 import { useMapGetter } from 'dashboard/composables/store';
+import { useUISettings } from 'dashboard/composables/useUISettings';
 import { MAILBOXES, mailboxLabelKey } from 'dashboard/constants/mailboxes';
 import Button from 'dashboard/components-next/button/Button.vue';
 import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.vue';
@@ -19,6 +20,22 @@ const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const inboxes = useMapGetter('inboxes/getInboxes');
+
+const { uiSettings, updateUISettings } = useUISettings();
+const pinnedIds = computed(() =>
+  (uiSettings.value.pinned_company_ids || []).map(String)
+);
+const isActiveCompanyPinned = computed(() =>
+  pinnedIds.value.includes(String(props.managedCompanyId))
+);
+const togglePin = () => {
+  const id = String(props.managedCompanyId);
+  updateUISettings({
+    pinned_company_ids: isActiveCompanyPinned.value
+      ? pinnedIds.value.filter(pinnedId => pinnedId !== id)
+      : [...pinnedIds.value, id],
+  });
+};
 
 const openMenu = ref('');
 const toggleMenu = menu => {
@@ -117,6 +134,15 @@ const onSelect = ({ action, value }) => {
         @action="onSelect"
       />
     </div>
+    <Button
+      v-if="activeCompany"
+      v-tooltip="$t('WORKLOAD.PIN')"
+      icon="i-lucide-star"
+      size="xs"
+      variant="ghost"
+      :color="isActiveCompanyPinned ? 'amber' : 'slate'"
+      @click="togglePin"
+    />
     <div
       v-on-click-outside="() => openMenu === 'mailbox' && toggleMenu('mailbox')"
       class="relative min-w-0"

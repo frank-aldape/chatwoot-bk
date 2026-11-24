@@ -19,6 +19,7 @@ import CountLeaf from './CountLeaf.vue';
 import { MAILBOXES, mailboxLabelKey } from 'dashboard/constants/mailboxes';
 import ConversationApi from 'dashboard/api/inbox/conversation';
 import { useIntervalFn } from '@vueuse/core';
+import { useUISettings } from 'dashboard/composables/useUISettings';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
@@ -117,11 +118,32 @@ const mailboxSidebarItems = computed(() =>
   }))
 );
 
-// Only companies with open conversations, busiest first, so 100+ stay short.
-const companySidebarItems = computed(() =>
-  sidebarCounts.value.companies
-    .slice()
-    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+// Pinned companies first (even with nothing open), then the busiest ones, so 100+ stay short.
+const { uiSettings } = useUISettings();
+const pinnedCompanyIds = computed(() =>
+  (uiSettings.value.pinned_company_ids || []).map(String)
+);
+
+const companySidebarItems = computed(() => {
+  const byId = new Map(
+    sidebarCounts.value.companies.map(company => [String(company.id), company])
+  );
+  inboxes.value.forEach(({ managed_company: company }) => {
+    const id = String(company?.id);
+    if (pinnedCompanyIds.value.includes(id) && !byId.has(id)) {
+      byId.set(id, { id: company.id, name: company.name, count: 0 });
+    }
+  });
+  const isPinned = company =>
+    pinnedCompanyIds.value.includes(String(company.id));
+
+  return [...byId.values()]
+    .sort(
+      (a, b) =>
+        isPinned(b) - isPinned(a) ||
+        b.count - a.count ||
+        a.name.localeCompare(b.name)
+    )
     .map(company => ({
       name: `managed-company-${company.id}`,
       label: company.name,
@@ -132,9 +154,12 @@ const companySidebarItems = computed(() =>
         'managed_company_conversations',
         'conversations_through_managed_company',
       ],
-      component: countLeaf(company.count),
-    }))
-);
+      component: countLeaf(
+        company.count,
+        isPinned(company) ? 'i-lucide-star' : undefined
+      ),
+    }));
+});
 
 const closeMobileSidebar = () => {
   if (!props.isMobileSidebarOpen) return;
