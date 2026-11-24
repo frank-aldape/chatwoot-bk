@@ -32,6 +32,9 @@ module Api::V1::InboxesHelper
     return unless channel_data.key?('smtp_enabled') && channel_data[:smtp_enabled]
 
     smtp = Net::SMTP.new(channel_data[:smtp_address], channel_data[:smtp_port])
+    # Stay well under the 15s Rack::Timeout so a misconfigured server surfaces as a validation error, not a 500
+    smtp.open_timeout = 5
+    smtp.read_timeout = 5
 
     set_smtp_encryption(channel_data, smtp)
     check_smtp_connection(channel_data, smtp)

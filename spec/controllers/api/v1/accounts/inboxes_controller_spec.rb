@@ -646,6 +646,8 @@ RSpec.describe 'Inboxes API', type: :request do
         allow(smtp_connection).to receive(:finish).and_return(true)
         allow(smtp_connection).to receive(:respond_to?).and_return(true)
         allow(smtp_connection).to receive(:enable_starttls_auto).and_return(true)
+        allow(smtp_connection).to receive(:open_timeout=)
+        allow(smtp_connection).to receive(:read_timeout=)
         allow(Net::SMTP).to receive(:new).and_return(smtp_connection)
 
         patch "/api/v1/accounts/#{account.id}/inboxes/#{email_inbox.id}",
@@ -676,6 +678,8 @@ RSpec.describe 'Inboxes API', type: :request do
         allow(smtp_connection).to receive(:finish).and_return(true)
         allow(smtp_connection).to receive(:respond_to?).and_return(true)
         allow(smtp_connection).to receive(:enable_tls).and_return(true)
+        allow(smtp_connection).to receive(:open_timeout=)
+        allow(smtp_connection).to receive(:read_timeout=)
         allow(Net::SMTP).to receive(:new).and_return(smtp_connection)
 
         patch "/api/v1/accounts/#{account.id}/inboxes/#{email_inbox.id}",
@@ -706,6 +710,8 @@ RSpec.describe 'Inboxes API', type: :request do
         allow(smtp_connection).to receive(:finish).and_return(true)
         allow(smtp_connection).to receive(:respond_to?).and_return(true)
         allow(smtp_connection).to receive(:enable_starttls_auto).and_return(true)
+        allow(smtp_connection).to receive(:open_timeout=)
+        allow(smtp_connection).to receive(:read_timeout=)
         allow(Net::SMTP).to receive(:new).and_return(smtp_connection)
 
         patch "/api/v1/accounts/#{account.id}/inboxes/#{email_inbox.id}",

@@ -9,6 +9,20 @@ describe('#mutations', () => {
       mutations[types.default.SET_INBOXES](state, inboxList);
       expect(state.records).toEqual(inboxList);
     });
+
+    it('keeps settings fields already loaded when a summary arrives later', () => {
+      const state = {
+        records: [{ id: 1, name: 'Old', imap_enabled: true, imap_port: 993 }],
+      };
+      mutations[types.default.SET_INBOXES](state, [
+        { id: 1, name: 'New' },
+        { id: 2, name: 'Other' },
+      ]);
+      expect(state.records).toEqual([
+        { id: 1, name: 'New', imap_enabled: true, imap_port: 993 },
+        { id: 2, name: 'Other' },
+      ]);
+    });
   });
 
   describe('#SET_INBOXES_ITEM', () => {

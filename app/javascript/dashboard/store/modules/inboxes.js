@@ -392,7 +392,15 @@ export const mutations = {
   [types.default.SET_INBOXES_UI_FLAG]($state, uiFlag) {
     $state.uiFlags = { ...$state.uiFlags, ...uiFlag };
   },
-  [types.default.SET_INBOXES]: MutationHelpers.set,
+  // The index payload is a summary; keep settings fields already loaded via
+  // `show` so a late index response doesn't blank out the settings screens.
+  [types.default.SET_INBOXES]($state, inboxes) {
+    const loaded = new Map($state.records.map(record => [record.id, record]));
+    $state.records = inboxes.map(inbox => ({
+      ...loaded.get(inbox.id),
+      ...inbox,
+    }));
+  },
   [types.default.SET_INBOX_ITEM]: MutationHelpers.setSingleRecord,
   [types.default.ADD_INBOXES]: MutationHelpers.create,
   [types.default.EDIT_INBOXES]: MutationHelpers.update,
