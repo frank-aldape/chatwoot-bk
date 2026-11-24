@@ -12,6 +12,7 @@ import {
   timeZoneOptions,
 } from '../helpers/businessHour';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 
 const DEFAULT_TIMEZONE = {
   label: 'Pacific Time (US & Canada) (GMT-07:00)',
@@ -24,6 +25,7 @@ export default {
     BusinessDay,
     NextButton,
     WootMessageEditor,
+    ComboBox,
   },
   mixins: [inboxMixin],
   props: {
@@ -57,6 +59,14 @@ export default {
     },
     timeZones() {
       return [...timeZoneOptions()];
+    },
+    timeZoneValue: {
+      get() {
+        return this.timeZone.value;
+      },
+      set(value) {
+        this.timeZone = this.timeZones.find(item => item.value === value);
+      },
     },
     isRichEditorEnabled() {
       if (
@@ -164,21 +174,15 @@ export default {
               "
             />
           </div>
-          <div class="timezone-input-wrap">
+          <div>
             <label>
               {{ $t('INBOX_MGMT.BUSINESS_HOURS.TIMEZONE_LABEL') }}
             </label>
-            <multiselect
-              v-model="timeZone"
+            <ComboBox
+              v-model="timeZoneValue"
               :options="timeZones"
-              deselect-label=""
-              select-label=""
-              selected-label=""
-              track-by="value"
-              label="label"
-              close-on-select
               :placeholder="$t('INBOX_MGMT.BUSINESS_HOURS.DAY.CHOOSE')"
-              :allow-empty="false"
+              class="mt-2"
             />
           </div>
 
@@ -205,12 +209,6 @@ export default {
 </template>
 
 <style lang="scss" scoped>
-.timezone-input-wrap {
-  &::v-deep .multiselect {
-    @apply mt-2;
-  }
-}
-
 ::v-deep.message-editor {
   @apply border-0;
 }

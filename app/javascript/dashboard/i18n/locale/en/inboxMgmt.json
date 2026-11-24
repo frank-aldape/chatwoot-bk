@@ -753,6 +753,7 @@
       "MANAGED_COMPANY": "Compañía",
       "MANAGED_COMPANY_SUB_TEXT": "Vincula este inbox con la compañía a la que pertenece. Los equipos solo pueden recibir acceso a inboxes dentro de las compañías que operan.",
       "MANAGED_COMPANY_PLACEHOLDER": "Ninguna compañía seleccionada",
+      "NO_MANAGED_COMPANY": "Sin compañía",
       "INBOX_TEAMS": "Equipos que atienden esta bandeja",
       "INBOX_TEAMS_SUB_TEXT": "El acceso se otorga por equipo: todos los agentes de los equipos seleccionados podrán ver y responder las conversaciones de esta bandeja.",
       "AGENT_ASSIGNMENT": "Asignación de conversaciones",

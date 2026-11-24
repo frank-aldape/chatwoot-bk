@@ -15,6 +15,7 @@ import {
 } from 'dashboard/composables/store';
 import ChannelIcon from 'next/icon/ChannelIcon.vue';
 import Button from 'dashboard/components-next/button/Button.vue';
+import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 
 const getters = useStoreGetters();
 const store = useStore();
@@ -44,20 +45,13 @@ const managedCompanyOptions = computed(() => {
 });
 
 const companyFilterOptions = computed(() => [
-  { id: 'all', name: t('INBOX_MGMT.FILTER.ALL_MANAGED_COMPANIES') },
-  { id: 'unassigned', name: t('INBOX_MGMT.FILTER.UNASSIGNED') },
-  ...managedCompanyOptions.value,
+  { value: 'all', label: t('INBOX_MGMT.FILTER.ALL_MANAGED_COMPANIES') },
+  { value: 'unassigned', label: t('INBOX_MGMT.FILTER.UNASSIGNED') },
+  ...managedCompanyOptions.value.map(company => ({
+    value: String(company.id),
+    label: company.name,
+  })),
 ]);
-
-const selectedCompanyFilter = computed({
-  get: () =>
-    companyFilterOptions.value.find(
-      o => String(o.id) === selectedManagedCompanyId.value
-    ) ?? companyFilterOptions.value[0],
-  set: value => {
-    selectedManagedCompanyId.value = value ? String(value.id) : 'all';
-  },
-});
 
 const matchesManagedCompanyFilter = inbox => {
   if (selectedManagedCompanyId.value === 'all') return true;
@@ -306,13 +300,9 @@ const openDelete = inbox => {
           <span class="font-medium text-n-slate-12">
             {{ $t('INBOX_MGMT.FILTER.MANAGED_COMPANY_LABEL') }}
           </span>
-          <multiselect
-            v-model="selectedCompanyFilter"
+          <ComboBox
+            v-model="selectedManagedCompanyId"
             :options="companyFilterOptions"
-            track-by="id"
-            label="name"
-            :allow-empty="false"
-            :show-labels="false"
             :placeholder="$t('INBOX_MGMT.FILTER.ALL_MANAGED_COMPANIES')"
           />
         </div>

@@ -5,6 +5,7 @@ import { useAlert } from 'dashboard/composables';
 import { useConfig } from 'dashboard/composables/useConfig';
 import SettingsSection from '../../../../../../components/SettingsSection.vue';
 import NextButton from 'dashboard/components-next/button/Button.vue';
+import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 import ManagedCompaniesAPI from 'dashboard/api/managedCompanies';
 import { parseAPIErrorResponse } from 'dashboard/store/utils/api';
 
@@ -12,6 +13,7 @@ export default {
   components: {
     SettingsSection,
     NextButton,
+    ComboBox,
   },
   props: {
     inbox: {
@@ -36,15 +38,23 @@ export default {
   computed: {
     selectedManagedCompany: {
       get() {
-        return (
-          this.managedCompanies.find(
-            c => c.id === this.selectedManagedCompanyId
-          ) || null
-        );
+        return this.selectedManagedCompanyId || '';
       },
       set(value) {
-        this.selectedManagedCompanyId = value?.id || null;
+        this.selectedManagedCompanyId = value || null;
       },
+    },
+    managedCompanyOptions() {
+      return [
+        {
+          value: '',
+          label: this.$t('INBOX_MGMT.SETTINGS_POPUP.NO_MANAGED_COMPANY'),
+        },
+        ...this.managedCompanies.map(company => ({
+          value: company.id,
+          label: this.companyLabel(company),
+        })),
+      ];
     },
     maxAssignmentLimitErrors() {
       if (this.v$.maxAssignmentLimit.$error) {
@@ -132,17 +142,12 @@ export default {
       :title="$t('INBOX_MGMT.SETTINGS_POPUP.MANAGED_COMPANY')"
       :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.MANAGED_COMPANY_SUB_TEXT')"
     >
-      <multiselect
+      <ComboBox
         v-model="selectedManagedCompany"
-        :options="managedCompanies"
-        track-by="id"
-        :custom-label="companyLabel"
+        :options="managedCompanyOptions"
         :placeholder="
           $t('INBOX_MGMT.SETTINGS_POPUP.MANAGED_COMPANY_PLACEHOLDER')
         "
-        :select-label="$t('FORMS.MULTISELECT.ENTER_TO_SELECT')"
-        :deselect-label="$t('FORMS.MULTISELECT.ENTER_TO_REMOVE')"
-        allow-empty
       />
 
       <NextButton

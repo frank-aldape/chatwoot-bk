@@ -2,11 +2,12 @@
 import parse from 'date-fns/parse';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import { generateTimeSlots } from '../helpers/businessHour';
+import ComboBox from 'dashboard/components-next/combobox/ComboBox.vue';
 
 const timeSlots = generateTimeSlots(30);
 
 export default {
-  components: {},
+  components: { ComboBox },
   props: {
     dayName: {
       type: String,
@@ -29,6 +30,12 @@ export default {
       return timeSlots.filter(slot => {
         return slot !== '12:00 AM';
       });
+    },
+    fromTimeOptions() {
+      return this.fromTimeSlots.map(slot => ({ value: slot, label: slot }));
+    },
+    toTimeOptions() {
+      return this.toTimeSlots.map(slot => ({ value: slot, label: slot }));
     },
     isDayEnabled: {
       get() {
@@ -171,28 +178,22 @@ export default {
             $t('INBOX_MGMT.BUSINESS_HOURS.ALL_DAY')
           }}</span>
         </div>
-        <multiselect
+        <ComboBox
           v-model="fromTime"
-          :options="fromTimeSlots"
-          deselect-label=""
-          select-label=""
-          selected-label=""
+          :options="fromTimeOptions"
           :placeholder="$t('INBOX_MGMT.BUSINESS_HOURS.DAY.CHOOSE')"
-          :allow-empty="false"
           :disabled="isOpenAllDay"
+          class="w-32"
         />
         <div class="separator-icon flex items-center py-0 px-3">
           <span class="i-lucide-minus size-4" />
         </div>
-        <multiselect
+        <ComboBox
           v-model="toTime"
-          :options="toTimeSlots"
-          deselect-label=""
-          select-label=""
-          selected-label=""
+          :options="toTimeOptions"
           :placeholder="$t('INBOX_MGMT.BUSINESS_HOURS.DAY.CHOOSE')"
-          :allow-empty="false"
           :disabled="isOpenAllDay"
+          class="w-32"
         />
       </div>
       <div v-if="hasError" class="date-error pt-1">
@@ -220,16 +221,3 @@ export default {
   </div>
 </template>
 
-<style lang="scss" scoped>
-.day-wrap::v-deep .multiselect {
-  @apply m-0 w-[7.5rem];
-
-  > .multiselect__tags {
-    @apply pl-3;
-
-    .multiselect__single {
-      @apply text-sm leading-6 py-2 px-0;
-    }
-  }
-}
-</style>
