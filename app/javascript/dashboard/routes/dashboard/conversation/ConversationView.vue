@@ -48,6 +48,10 @@ export default {
       type: [String, Number],
       default: 0,
     },
+    mailbox: {
+      type: String,
+      default: '',
+    },
     conversationType: {
       type: String,
       default: '',
@@ -206,6 +210,7 @@ export default {
       :label="label"
       :team-id="teamId"
       :managed-company-id="managedCompanyId"
+      :mailbox="mailbox"
       :conversation-type="conversationType"
       :folders-id="foldersId"
       :is-on-expanded-layout="isOnExpandedLayout"

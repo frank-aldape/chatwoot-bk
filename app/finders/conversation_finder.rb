@@ -65,6 +65,7 @@ class ConversationFinder
     find_all_conversations
     filter_by_status unless params[:q]
     filter_by_managed_company
+    filter_by_mailbox
     filter_by_team
     filter_by_labels
     filter_by_query
@@ -158,6 +159,14 @@ class ConversationFinder
     return unless params[:managed_company_id]
 
     @conversations = @conversations.joins(:inbox).where(inboxes: { managed_company_id: params[:managed_company_id] })
+  end
+
+  def filter_by_mailbox
+    return unless params[:mailbox]
+
+    mailbox_inboxes = current_account.inboxes.joins(Conversations::SidebarCountsService::CHANNEL_EMAIL_JOIN)
+                                     .where("#{Conversations::SidebarCountsService::MAILBOX_SQL} = ?", params[:mailbox].to_s.downcase)
+    @conversations = @conversations.where(inbox_id: mailbox_inboxes.select(:id))
   end
 
   def filter_by_labels

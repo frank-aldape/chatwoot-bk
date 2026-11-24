@@ -81,6 +81,7 @@ const props = defineProps({
   conversationInbox: { type: [String, Number], default: 0 },
   teamId: { type: [String, Number], default: 0 },
   managedCompanyId: { type: [String, Number], default: 0 },
+  mailbox: { type: String, default: '' },
   label: { type: String, default: '' },
   conversationType: { type: String, default: '' },
   foldersId: { type: [String, Number], default: 0 },
@@ -281,6 +282,17 @@ const conversationListPagination = computed(() => {
   return currentPage.value + 1;
 });
 
+// Inboxes whose address starts with the mailbox alias (facturacion@…), used to
+// keep realtime updates inside the mailbox view.
+const mailboxInboxIds = computed(() =>
+  inboxesList.value
+    .filter(
+      inboxRecord =>
+        (inboxRecord.email || '').split('@')[0].toLowerCase() === props.mailbox
+    )
+    .map(inboxRecord => inboxRecord.id)
+);
+
 const conversationFilters = computed(() => {
   return {
     inboxId: props.conversationInbox ? props.conversationInbox : undefined,
@@ -291,6 +303,8 @@ const conversationFilters = computed(() => {
     labels: props.label ? [props.label] : undefined,
     teamId: props.teamId || undefined,
     managedCompanyId: props.managedCompanyId || undefined,
+    mailbox: props.mailbox || undefined,
+    mailboxInboxIds: props.mailbox ? mailboxInboxIds.value : undefined,
     conversationType: props.conversationType || undefined,
   };
 });
@@ -341,6 +355,9 @@ const pageTitle = computed(() => {
   }
   if (hasManagedCompanyScope.value) {
     return t('CHAT_LIST.MANAGED_COMPANY.FALLBACK_TITLE');
+  }
+  if (props.mailbox) {
+    return t('CHAT_LIST.MAILBOX_TITLE', { mailbox: props.mailbox });
   }
   if (props.label) {
     return `#${props.label}`;
@@ -943,7 +960,14 @@ function openLastItemAfterDeleteInFolder() {
 
 function redirectToConversationList() {
   const {
-    params: { accountId, inbox_id: inboxId, label, teamId, managedCompanyId },
+    params: {
+      accountId,
+      inbox_id: inboxId,
+      label,
+      teamId,
+      managedCompanyId,
+      mailbox,
+    },
     name,
   } = route;
 
@@ -962,6 +986,7 @@ function redirectToConversationList() {
       label,
       teamId,
       managedCompanyId,
+      mailbox,
     })
   );
 }
@@ -1109,6 +1134,10 @@ watch(
 );
 watch(
   computed(() => props.managedCompanyId),
+  () => resetAndFetchData()
+);
+watch(
+  computed(() => props.mailbox),
   () => resetAndFetchData()
 );
 watch(
@@ -1293,6 +1322,7 @@ watch(conversationFilters, (newVal, oldVal) => {
               :label="label"
               :team-id="teamId"
               :managed-company-id="managedCompanyId"
+              :mailbox="mailbox"
               :folders-id="foldersId"
               :conversation-type="conversationType"
               :show-assignee="showAssigneeInConversationCard"

@@ -10,6 +10,7 @@
     "TAB_HEADING": "Conversaciones",
     "MENTION_HEADING": "Menciones",
     "UNATTENDED_HEADING": "Sin atender",
+    "MAILBOX_TITLE": "Buzón: {mailbox}",
     "MANAGED_COMPANY": {
       "FALLBACK_TITLE": "Compañía gestionada",
       "VISIBLE_CHANNELS": "Canales visibles ({count}): {inboxes}",

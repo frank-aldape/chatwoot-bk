@@ -15,6 +15,9 @@ import SidebarGroup from './SidebarGroup.vue';
 import SidebarProfileMenu from './SidebarProfileMenu.vue';
 import SidebarChangelogCard from './SidebarChangelogCard.vue';
 import ChannelLeaf from './ChannelLeaf.vue';
+import CountLeaf from './CountLeaf.vue';
+import ConversationApi from 'dashboard/api/inbox/conversation';
+import { useIntervalFn } from '@vueuse/core';
 import SidebarAccountSwitcher from './SidebarAccountSwitcher.vue';
 import Logo from 'next/icon/Logo.vue';
 import ComposeConversation from 'dashboard/components-next/NewConversation/ComposeConversation.vue';
@@ -83,54 +86,69 @@ const sortedInboxes = computed(() =>
   inboxes.value.slice().sort((a, b) => a.name.localeCompare(b.name))
 );
 
-const managedCompanies = computed(() =>
-  sortedInboxes.value
-    .map(inbox => inbox.managed_company)
-    .filter(company => company?.id)
-    .filter(
-      (company, index, companies) =>
-        companies.findIndex(({ id }) => id === company.id) === index
-    )
-    .sort((left, right) => left.name.localeCompare(right.name))
+// Base mailbox aliases every company domain gets, in this fixed order.
+const MAILBOXES = [
+  'facturacion',
+  'ventas',
+  'compras',
+  'atencion',
+  'contacto',
+  'administracion',
+  'operaciones',
+  'contabilidad',
+  'sistemas',
+  'no-reply',
+];
+
+const sidebarCounts = ref({ mailboxes: {}, companies: [] });
+const fetchSidebarCounts = async () => {
+  try {
+    const { data } = await ConversationApi.sidebarCounts();
+    sidebarCounts.value = data;
+  } catch {
+    // Counts are decorative; keep the last ones on a failed refresh.
+  }
+};
+fetchSidebarCounts();
+useIntervalFn(fetchSidebarCounts, 60000);
+
+const countLeaf = (count, icon) => leafProps =>
+  h(CountLeaf, {
+    label: leafProps.label,
+    active: leafProps.active,
+    icon,
+    count,
+  });
+
+const mailboxSidebarItems = computed(() =>
+  MAILBOXES.map(mailbox => ({
+    name: `mailbox-${mailbox}`,
+    label: t(
+      `SIDEBAR.MAILBOX_NAMES.${mailbox.toUpperCase().replace('-', '_')}`
+    ),
+    to: accountScopedRoute('mailbox_conversations', { mailbox }),
+    activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
+    component: countLeaf(sidebarCounts.value.mailboxes[mailbox] || 0),
+  }))
 );
 
-const managedCompanySidebarGroups = computed(() =>
-  managedCompanies.value.map(company => {
-    const companyInboxes = sortedInboxes.value.filter(
-      inbox => inbox.managed_company?.id === company.id
-    );
-
-    return {
+// Only companies with open conversations, busiest first, so 100+ stay short.
+const companySidebarItems = computed(() =>
+  sidebarCounts.value.companies
+    .slice()
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+    .map(company => ({
       name: `managed-company-${company.id}`,
       label: company.name,
-      icon: 'i-lucide-building-2',
-      children: [
-        {
-          name: `${company.name}-${company.id}-overview`,
-          label: t('SIDEBAR.ALL_COMPANY_CONVERSATIONS'),
-          to: accountScopedRoute('managed_company_conversations', {
-            managedCompanyId: company.id,
-          }),
-          activeOn: [
-            'managed_company_conversations',
-            'conversations_through_managed_company',
-          ],
-        },
-        ...companyInboxes.map(inbox => ({
-          name: `${company.name}-${inbox.name}-${inbox.id}`,
-          label: inbox.name,
-          to: accountScopedRoute('inbox_dashboard', { inbox_id: inbox.id }),
-          activeOn: ['conversation_through_inbox'],
-          component: leafProps =>
-            h(ChannelLeaf, {
-              label: leafProps.label,
-              active: leafProps.active,
-              inbox,
-            }),
-        })),
+      to: accountScopedRoute('managed_company_conversations', {
+        managedCompanyId: company.id,
+      }),
+      activeOn: [
+        'managed_company_conversations',
+        'conversations_through_managed_company',
       ],
-    };
-  })
+      component: countLeaf(company.count),
+    }))
 );
 
 const closeMobileSidebar = () => {
@@ -232,17 +250,24 @@ const menuItems = computed(() => {
             to: accountScopedRoute('team_conversations', { teamId: team.id }),
           })),
         },
-        ...(managedCompanies.value.length
+        {
+          name: 'Mailboxes',
+          label: t('SIDEBAR.MAILBOXES'),
+          icon: 'i-lucide-inbox',
+          activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
+          children: mailboxSidebarItems.value,
+        },
+        ...(companySidebarItems.value.length
           ? [
               {
                 name: 'Managed Companies',
-                label: t('SIDEBAR.MANAGED_COMPANIES'),
+                label: t('SIDEBAR.COMPANIES_WITH_PENDING'),
                 icon: 'i-lucide-building-2',
                 activeOn: [
                   'managed_company_conversations',
                   'conversations_through_managed_company',
                 ],
-                children: managedCompanySidebarGroups.value,
+                children: companySidebarItems.value,
               },
             ]
           : []),

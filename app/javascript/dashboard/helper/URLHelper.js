@@ -10,6 +10,7 @@ export const conversationUrl = ({
   label,
   teamId,
   managedCompanyId,
+  mailbox,
   conversationType = '',
   foldersId,
 }) => {
@@ -22,6 +23,8 @@ export const conversationUrl = ({
     url = `accounts/${accountId}/team/${teamId}/conversations/${id}`;
   } else if (managedCompanyId) {
     url = `accounts/${accountId}/managed_companies/${managedCompanyId}/conversations/${id}`;
+  } else if (mailbox) {
+    url = `accounts/${accountId}/mailboxes/${mailbox}/conversations/${id}`;
   } else if (foldersId && foldersId !== 0) {
     url = `accounts/${accountId}/custom_view/${foldersId}/conversations/${id}`;
   } else if (conversationType === 'mention') {
@@ -41,6 +44,7 @@ export const conversationListPageURL = ({
   label,
   teamId,
   managedCompanyId,
+  mailbox,
   customViewId,
 }) => {
   let url = `accounts/${accountId}/dashboard`;
@@ -50,6 +54,8 @@ export const conversationListPageURL = ({
     url = `accounts/${accountId}/team/${teamId}`;
   } else if (managedCompanyId) {
     url = `accounts/${accountId}/managed_companies/${managedCompanyId}`;
+  } else if (mailbox) {
+    url = `accounts/${accountId}/mailboxes/${mailbox}`;
   } else if (inboxId) {
     url = `accounts/${accountId}/inbox/${inboxId}`;
   } else if (customViewId) {

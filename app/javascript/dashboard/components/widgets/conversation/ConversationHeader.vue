@@ -44,6 +44,7 @@ const backButtonUrl = computed(() => {
       label,
       teamId,
       managedCompanyId,
+      mailbox,
       id: customViewId,
     },
     name,
@@ -59,6 +60,7 @@ const backButtonUrl = computed(() => {
     label,
     teamId,
     managedCompanyId,
+    mailbox,
     conversationType: conversationTypeMap[name],
     customViewId,
   });

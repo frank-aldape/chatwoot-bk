@@ -134,6 +134,29 @@ export default {
       }),
     },
     {
+      path: frontendURL('accounts/:accountId/mailboxes/:mailbox'),
+      name: 'mailbox_conversations',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: () => import('./ConversationView.vue'),
+      props: route => ({ mailbox: route.params.mailbox }),
+    },
+    {
+      path: frontendURL(
+        'accounts/:accountId/mailboxes/:mailbox/conversations/:conversationId'
+      ),
+      name: 'conversations_through_mailbox',
+      meta: {
+        permissions: CONVERSATION_PERMISSIONS,
+      },
+      component: () => import('./ConversationView.vue'),
+      props: route => ({
+        conversationId: route.params.conversationId,
+        mailbox: route.params.mailbox,
+      }),
+    },
+    {
       path: frontendURL('accounts/:accountId/custom_view/:id'),
       name: 'folder_conversations',
       meta: {

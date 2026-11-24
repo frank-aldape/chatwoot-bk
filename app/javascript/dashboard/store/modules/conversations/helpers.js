@@ -36,10 +36,19 @@ export const filterByUnattended = (
 };
 
 export const applyPageFilters = (conversation, filters) => {
-  const { inboxId, status, labels = [], teamId, conversationType } = filters;
+  const {
+    inboxId,
+    status,
+    labels = [],
+    teamId,
+    managedCompanyId,
+    mailboxInboxIds,
+    conversationType,
+  } = filters;
   const {
     status: chatStatus,
     inbox_id: chatInboxId,
+    managed_company_id: chatManagedCompanyId,
     labels: chatLabels = [],
     meta = {},
     first_reply_created_at: firstReplyOn,
@@ -52,6 +61,13 @@ export const applyPageFilters = (conversation, filters) => {
   shouldFilter = filterByInbox(shouldFilter, inboxId, chatInboxId);
   shouldFilter = filterByTeam(shouldFilter, teamId, chatTeamId);
   shouldFilter = filterByLabel(shouldFilter, labels, chatLabels);
+  if (managedCompanyId) {
+    shouldFilter =
+      shouldFilter && Number(managedCompanyId) === chatManagedCompanyId;
+  }
+  if (mailboxInboxIds) {
+    shouldFilter = shouldFilter && mailboxInboxIds.includes(chatInboxId);
+  }
   shouldFilter = filterByUnattended(
     shouldFilter,
     conversationType,

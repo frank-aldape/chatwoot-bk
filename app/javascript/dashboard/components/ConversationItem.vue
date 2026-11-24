@@ -31,6 +31,10 @@ export default {
       type: [String, Number],
       default: 0,
     },
+    mailbox: {
+      type: String,
+      default: '',
+    },
     label: {
       type: String,
       default: '',
@@ -57,6 +61,7 @@ export default {
     :active-label="label"
     :team-id="teamId"
     :managed-company-id="managedCompanyId"
+    :mailbox="mailbox"
     :folders-id="foldersId"
     :chat="source"
     :conversation-type="conversationType"
