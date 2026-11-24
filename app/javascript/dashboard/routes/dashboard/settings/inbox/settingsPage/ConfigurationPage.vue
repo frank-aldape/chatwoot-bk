@@ -11,9 +11,11 @@ import NextInput from 'dashboard/components-next/input/Input.vue';
 import TextArea from 'next/textarea/TextArea.vue';
 import WhatsappReauthorize from '../channels/whatsapp/Reauthorize.vue';
 import { sanitizeAllowedDomains } from 'dashboard/helper/URLHelper';
+import CodeBlock from 'dashboard/components-next/code/CodeBlock.vue';
 
 export default {
   components: {
+    CodeBlock,
     SettingsSection,
     ImapSettings,
     SmtpSettings,
@@ -168,7 +170,7 @@ export default {
       :title="$t('INBOX_MGMT.ADD.TWILIO.API_CALLBACK.TITLE')"
       :sub-title="$t('INBOX_MGMT.ADD.TWILIO.API_CALLBACK.SUBTITLE')"
     >
-      <woot-code :script="inbox.callback_webhook_url" lang="html" />
+      <CodeBlock :script="inbox.callback_webhook_url" lang="html" />
     </SettingsSection>
     <SettingsSection
       v-if="isATwilioWhatsAppChannel"
@@ -191,7 +193,7 @@ export default {
         $t('INBOX_MGMT.ADD.VOICE.CONFIGURATION.TWILIO_VOICE_URL_SUBTITLE')
       "
     >
-      <woot-code :script="inbox.voice_call_webhook_url" lang="html" />
+      <CodeBlock :script="inbox.voice_call_webhook_url" lang="html" />
     </SettingsSection>
     <SettingsSection
       :title="$t('INBOX_MGMT.ADD.VOICE.CONFIGURATION.TWILIO_STATUS_URL_TITLE')"
@@ -199,7 +201,7 @@ export default {
         $t('INBOX_MGMT.ADD.VOICE.CONFIGURATION.TWILIO_STATUS_URL_SUBTITLE')
       "
     >
-      <woot-code :script="inbox.voice_status_webhook_url" lang="html" />
+      <CodeBlock :script="inbox.voice_status_webhook_url" lang="html" />
     </SettingsSection>
   </div>
 
@@ -208,7 +210,7 @@ export default {
       :title="$t('INBOX_MGMT.ADD.LINE_CHANNEL.API_CALLBACK.TITLE')"
       :sub-title="$t('INBOX_MGMT.ADD.LINE_CHANNEL.API_CALLBACK.SUBTITLE')"
     >
-      <woot-code :script="inbox.callback_webhook_url" lang="html" />
+      <CodeBlock :script="inbox.callback_webhook_url" lang="html" />
     </SettingsSection>
   </div>
   <div v-else-if="isAWebWidgetInbox">
@@ -217,7 +219,7 @@ export default {
         :title="$t('INBOX_MGMT.SETTINGS_POPUP.MESSENGER_HEADING')"
         :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.MESSENGER_SUB_HEAD')"
       >
-        <woot-code
+        <CodeBlock
           :script="inbox.web_widget_script"
           lang="html"
           :codepen-title="`${inbox.name} - Chatwoot Widget Test`"
@@ -252,7 +254,7 @@ export default {
       <SettingsSection
         :title="$t('INBOX_MGMT.SETTINGS_POPUP.HMAC_VERIFICATION')"
       >
-        <woot-code :script="inbox.hmac_token" />
+        <CodeBlock :script="inbox.hmac_token" />
         <template #subTitle>
           {{ $t('INBOX_MGMT.SETTINGS_POPUP.HMAC_DESCRIPTION') }}
           <a
@@ -293,7 +295,7 @@ export default {
           <p class="mb-2 text-sm font-medium text-n-slate-12">
             {{ $t('INBOX_MGMT.SETTINGS_POPUP.LINKEDIN_BRIDGE.OUTGOING_TITLE') }}
           </p>
-          <woot-code v-if="inbox.webhook_url" :script="inbox.webhook_url" />
+          <CodeBlock v-if="inbox.webhook_url" :script="inbox.webhook_url" />
           <p v-else class="text-sm text-n-slate-11">
             {{ $t('INBOX_MGMT.SETTINGS_POPUP.LINKEDIN_BRIDGE.OUTGOING_EMPTY') }}
           </p>
@@ -302,7 +304,7 @@ export default {
           <p class="mb-2 text-sm font-medium text-n-slate-12">
             {{ $t('INBOX_MGMT.SETTINGS_POPUP.LINKEDIN_BRIDGE.CONTACTS_TITLE') }}
           </p>
-          <woot-code :script="linkedinBridgeContactEndpoint" />
+          <CodeBlock :script="linkedinBridgeContactEndpoint" />
         </div>
         <div>
           <p class="mb-2 text-sm font-medium text-n-slate-12">
@@ -312,13 +314,13 @@ export default {
               )
             }}
           </p>
-          <woot-code :script="linkedinBridgeConversationEndpoint" />
+          <CodeBlock :script="linkedinBridgeConversationEndpoint" />
         </div>
         <div>
           <p class="mb-2 text-sm font-medium text-n-slate-12">
             {{ $t('INBOX_MGMT.SETTINGS_POPUP.LINKEDIN_BRIDGE.MESSAGES_TITLE') }}
           </p>
-          <woot-code :script="linkedinBridgeMessageEndpoint" />
+          <CodeBlock :script="linkedinBridgeMessageEndpoint" />
         </div>
       </div>
     </SettingsSection>
@@ -327,14 +329,14 @@ export default {
       :title="$t('INBOX_MGMT.SETTINGS_POPUP.INBOX_IDENTIFIER')"
       :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.INBOX_IDENTIFIER_SUB_TEXT')"
     >
-      <woot-code :script="inbox.inbox_identifier" />
+      <CodeBlock :script="inbox.inbox_identifier" />
     </SettingsSection>
 
     <SettingsSection
       :title="$t('INBOX_MGMT.SETTINGS_POPUP.HMAC_VERIFICATION')"
       :sub-title="$t('INBOX_MGMT.SETTINGS_POPUP.HMAC_DESCRIPTION')"
     >
-      <woot-code :script="inbox.hmac_token" />
+      <CodeBlock :script="inbox.hmac_token" />
     </SettingsSection>
     <SettingsSection
       :title="$t('INBOX_MGMT.SETTINGS_POPUP.HMAC_MANDATORY_VERIFICATION')"
@@ -363,7 +365,7 @@ export default {
             : ''
         "
       >
-        <woot-code
+        <CodeBlock
           v-if="isForwardingEnabled"
           :script="inbox.forward_to_email"
         />
@@ -416,7 +418,7 @@ export default {
             $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_WEBHOOK_SUBHEADER')
           "
         >
-          <woot-code :script="inbox.provider_config.webhook_verify_token" />
+          <CodeBlock :script="inbox.provider_config.webhook_verify_token" />
         </SettingsSection>
         <SettingsSection
           :title="$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_SECTION_TITLE')"
@@ -424,7 +426,7 @@ export default {
             $t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_SECTION_SUBHEADER')
           "
         >
-          <woot-code :script="inbox.provider_config.api_key" />
+          <CodeBlock :script="inbox.provider_config.api_key" />
         </SettingsSection>
         <SettingsSection
           :title="$t('INBOX_MGMT.SETTINGS_POPUP.WHATSAPP_SECTION_UPDATE_TITLE')"

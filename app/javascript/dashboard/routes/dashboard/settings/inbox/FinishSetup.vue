@@ -10,6 +10,7 @@ import DuplicateInboxBanner from './channels/instagram/DuplicateInboxBanner.vue'
 import EmailInboxFinish from './channels/emailChannels/EmailInboxFinish.vue';
 import { useInbox } from 'dashboard/composables/useInbox';
 import { INBOX_TYPES } from 'dashboard/helper/inbox';
+import CodeBlock from 'dashboard/components-next/code/CodeBlock.vue';
 
 const { t } = useI18n();
 const route = useRoute();
@@ -181,13 +182,13 @@ onMounted(() => {
     >
       <div class="w-full text-center">
         <div class="my-4 mx-auto max-w-[70%]">
-          <woot-code
+          <CodeBlock
             v-if="currentInbox.web_widget_script"
             :script="currentInbox.web_widget_script"
           />
         </div>
         <div class="w-[50%] max-w-[50%] ml-[25%]">
-          <woot-code
+          <CodeBlock
             v-if="isATwilioWhatsAppChannel"
             lang="html"
             :script="currentInbox.callback_webhook_url"
@@ -200,7 +201,7 @@ onMounted(() => {
           <p class="mt-8 font-medium text-n-slate-11">
             {{ $t('INBOX_MGMT.ADD.WHATSAPP.API_CALLBACK.WEBHOOK_URL') }}
           </p>
-          <woot-code lang="html" :script="currentInbox.callback_webhook_url" />
+          <CodeBlock lang="html" :script="currentInbox.callback_webhook_url" />
           <p class="mt-8 font-medium text-n-slate-11">
             {{
               $t(
@@ -208,20 +209,20 @@ onMounted(() => {
               )
             }}
           </p>
-          <woot-code
+          <CodeBlock
             lang="html"
             :script="currentInbox.provider_config.webhook_verify_token"
           />
         </div>
         <div class="w-[50%] max-w-[50%] ml-[25%]">
-          <woot-code
+          <CodeBlock
             v-if="isALineChannel"
             lang="html"
             :script="currentInbox.callback_webhook_url"
           />
         </div>
         <div class="w-[50%] max-w-[50%] ml-[25%]">
-          <woot-code
+          <CodeBlock
             v-if="isASmsInbox"
             lang="html"
             :script="currentInbox.callback_webhook_url"

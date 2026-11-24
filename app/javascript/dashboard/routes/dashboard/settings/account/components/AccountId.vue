@@ -4,6 +4,7 @@ import { useAccount } from 'dashboard/composables/useAccount';
 import { useI18n } from 'vue-i18n';
 
 import SectionLayout from './SectionLayout.vue';
+import CodeBlock from 'dashboard/components-next/code/CodeBlock.vue';
 
 const { t } = useI18n();
 const { currentAccount } = useAccount();
@@ -17,6 +18,6 @@ const getAccountId = computed(() => currentAccount.value.id.toString());
     :description="t('GENERAL_SETTINGS.FORM.ACCOUNT_ID.NOTE')"
     with-border
   >
-    <woot-code :script="getAccountId" />
+    <CodeBlock :script="getAccountId" />
   </SectionLayout>
 </template>

@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
+import CodeBlock from 'dashboard/components-next/code/CodeBlock.vue';
 
 const props = defineProps({
   inbox: {
@@ -36,7 +37,7 @@ const showForwardingAddress = computed(() => {
       <p class="mt-8 mb-4 font-medium text-n-slate-11">
         {{ $t('INBOX_MGMT.ADD.EMAIL_CHANNEL.FORWARDING_ADDRESS_LABEL') }}
       </p>
-      <woot-code lang="html" :script="inbox.forward_to_email" />
+      <CodeBlock lang="html" :script="inbox.forward_to_email" />
     </div>
 
     <p class="mt-8 text-sm text-n-slate-11 pb-4">

@@ -10,9 +10,11 @@ import { LocalStorage } from 'shared/helpers/localStorage';
 import NextButton from 'dashboard/components-next/button/Button.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import Editor from 'dashboard/components-next/Editor/Editor.vue';
+import CodeBlock from 'dashboard/components-next/code/CodeBlock.vue';
 
 export default {
   components: {
+    CodeBlock,
     Widget,
     InputRadioGroup,
     NextButton,
@@ -435,7 +437,7 @@ export default {
           v-else
           class="mx-5 p-2.5 bg-n-slate-3 rounded-lg dark:bg-n-solid-3"
         >
-          <woot-code :script="widgetScript" />
+          <CodeBlock :script="widgetScript" />
         </div>
       </div>
     </div>

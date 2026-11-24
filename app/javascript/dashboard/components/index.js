@@ -1,6 +1,5 @@
 // [NOTE][DEPRECATED] This method is to be deprecated, please do not add new components to this file.
 /* eslint no-plusplus: 0 */
-import Code from './Code.vue';
 import ColorPicker from './widgets/ColorPicker.vue';
 import ConfirmDeleteModal from './widgets/modal/ConfirmDeleteModal.vue';
 import ConfirmModal from './widgets/modal/ConfirmationModal.vue';
@@ -20,7 +19,6 @@ import TabsItem from './ui/Tabs/TabsItem.vue';
 import DatePicker from './ui/DatePicker/DatePicker.vue';
 
 const WootUIKit = {
-  Code,
   ColorPicker,
   ConfirmDeleteModal,
   ConfirmModal,
