@@ -106,14 +106,21 @@ const fetchSidebarCounts = async () => {
 fetchSidebarCounts();
 useIntervalFn(fetchSidebarCounts, 60000);
 
-const countLeaf = (count, icon, dot) => leafProps =>
+const countLeaf = (count, extra) => leafProps =>
   h(CountLeaf, {
     label: leafProps.label,
     active: leafProps.active,
-    icon,
-    dot,
     count,
+    ...extra,
   });
+
+// Small blue text row used for the "show more" style links in a subgroup.
+const linkLeaf = leafProps =>
+  h(
+    'span',
+    { class: 'flex-1 truncate text-xs font-medium text-n-blue-text' },
+    leafProps.label
+  );
 
 // Mailboxes with nothing open stay folded behind a toggle, like the mockup.
 const showIdleMailboxes = ref(false);
@@ -130,11 +137,9 @@ const mailboxSidebarItems = computed(() => {
     label: t(mailboxLabelKey(mailbox)),
     to: accountScopedRoute('mailbox_conversations', { mailbox }),
     activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
-    component: countLeaf(
-      countOf(mailbox),
-      undefined,
-      mailboxColors(mailbox).dot
-    ),
+    component: countLeaf(countOf(mailbox), {
+      dot: mailboxColors(mailbox).dot,
+    }),
   }));
   if (!idleCount) return items;
 
@@ -149,58 +154,81 @@ const mailboxSidebarItems = computed(() => {
       onClick: () => {
         showIdleMailboxes.value = !showIdleMailboxes.value;
       },
-      component: leafProps =>
-        h(
-          'span',
-          { class: 'flex-1 truncate text-xs font-medium text-n-blue-text' },
-          leafProps.label
-        ),
+      component: linkLeaf,
     },
   ];
 });
 
-// Pinned companies first (even with nothing open), then the busiest ones, so 100+ stay short.
+// "Fijadas" (even with nothing open) and "Con pendientes" (busiest first), so
+// 100+ companies stay short; the rest live in the workload page.
 const { uiSettings } = useUISettings();
 const pinnedCompanyIds = computed(() =>
   (uiSettings.value.pinned_company_ids || []).map(String)
 );
 
-const companySidebarItems = computed(() => {
-  const byId = new Map(
-    sidebarCounts.value.companies.map(company => [String(company.id), company])
-  );
+const allCompanies = computed(() => {
+  const byId = new Map();
   inboxes.value.forEach(({ managed_company: company }) => {
-    const id = String(company?.id);
-    if (pinnedCompanyIds.value.includes(id) && !byId.has(id)) {
-      byId.set(id, { id: company.id, name: company.name, count: 0 });
-    }
+    if (company?.id) byId.set(String(company.id), company);
   });
-  const isPinned = company =>
-    pinnedCompanyIds.value.includes(String(company.id));
-
-  return [...byId.values()]
-    .sort(
-      (a, b) =>
-        isPinned(b) - isPinned(a) ||
-        b.count - a.count ||
-        a.name.localeCompare(b.name)
-    )
-    .map(company => ({
-      name: `managed-company-${company.id}`,
-      label: company.name,
-      to: accountScopedRoute('managed_company_conversations', {
-        managedCompanyId: company.id,
-      }),
-      activeOn: [
-        'managed_company_conversations',
-        'conversations_through_managed_company',
-      ],
-      component: countLeaf(
-        company.count,
-        isPinned(company) ? 'i-lucide-star' : undefined
-      ),
-    }));
+  return byId;
 });
+
+const companySidebarItems = computed(() => {
+  const counts = new Map(
+    sidebarCounts.value.companies.map(company => [
+      String(company.id),
+      company.count,
+    ])
+  );
+  const toItem = (id, extra) => ({
+    name: `managed-company-${id}`,
+    label: allCompanies.value.get(id).name,
+    to: accountScopedRoute('managed_company_conversations', {
+      managedCompanyId: id,
+    }),
+    activeOn: [
+      'managed_company_conversations',
+      'conversations_through_managed_company',
+    ],
+    component: countLeaf(counts.get(id) || 0, extra),
+  });
+  const known = id => allCompanies.value.has(id);
+  const byCount = (a, b) => (counts.get(b) || 0) - (counts.get(a) || 0);
+
+  const pinned = pinnedCompanyIds.value.filter(known).sort(byCount);
+  const pending = [...counts.keys()]
+    .filter(id => known(id) && !pinnedCompanyIds.value.includes(id))
+    .sort(byCount);
+  const section = (name, label, ids, extra) =>
+    ids.length
+      ? [
+          { name, label, to: '', heading: true },
+          ...ids.map(id => toItem(id, extra)),
+        ]
+      : [];
+
+  return [
+    ...section('companies-pinned', t('SIDEBAR.PINNED_COMPANIES'), pinned, {
+      icon: 'i-lucide-star',
+      iconClass: 'text-n-amber-10',
+    }),
+    ...section('companies-pending', t('SIDEBAR.PENDING_COMPANIES'), pending, {
+      dot: 'bg-n-slate-8',
+    }),
+    {
+      name: 'conversation-workload',
+      label: t('SIDEBAR.VIEW_ALL_COMPANIES', {
+        count: allCompanies.value.size,
+      }),
+      to: accountScopedRoute('conversation_workload'),
+      component: linkLeaf,
+    },
+  ];
+});
+
+// The search field opens the command bar, which lists mailboxes and companies.
+const openCommandBar = () => document.querySelector('ninja-keys')?.open();
 
 const closeMobileSidebar = () => {
   if (!props.isMobileSidebarOpen) return;
@@ -300,21 +328,14 @@ const menuItems = computed(() => {
         },
         {
           name: 'Managed Companies',
-          label: t('SIDEBAR.COMPANIES_WITH_PENDING'),
+          label: t('SIDEBAR.MANAGED_COMPANIES_GROUP'),
           icon: 'i-lucide-building-2',
           activeOn: [
             'managed_company_conversations',
             'conversations_through_managed_company',
             'conversation_workload',
           ],
-          children: [
-            ...companySidebarItems.value,
-            {
-              name: 'conversation-workload',
-              label: t('SIDEBAR.VIEW_ALL_COMPANIES'),
-              to: accountScopedRoute('conversation_workload'),
-            },
-          ],
+          children: companySidebarItems.value,
         },
         {
           name: 'Channels',
@@ -798,6 +819,19 @@ const menuItems = computed(() => {
         />
       </div>
       <div class="flex gap-2 px-2">
+        <button
+          type="button"
+          class="flex flex-1 min-w-0 items-center gap-1.5 h-7 px-2 rounded-lg bg-n-solid-3 dark:bg-n-black/30 outline outline-1 outline-n-weak text-n-slate-10 hover:text-n-slate-12"
+          @click="openCommandBar"
+        >
+          <span class="i-lucide-search size-3.5 flex-shrink-0" />
+          <span class="flex-1 truncate text-xs text-start">
+            {{ t('SIDEBAR.GO_TO_PLACEHOLDER') }}
+          </span>
+          <span class="flex-shrink-0 text-xxs font-semibold">
+            {{ t('SIDEBAR.COMMAND_BAR_SHORTCUT') }}
+          </span>
+        </button>
         <ComposeConversation align-position="right" @close="onComposeClose">
           <template #trigger="{ toggle }">
             <Button

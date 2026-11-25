@@ -117,6 +117,7 @@ export default {
       component: () => import('./ConversationView.vue'),
       props: route => ({
         managedCompanyId: route.params.managedCompanyId,
+        mailbox: route.query.mailbox || '',
       }),
     },
     {
@@ -131,6 +132,7 @@ export default {
       props: route => ({
         conversationId: route.params.conversationId,
         managedCompanyId: route.params.managedCompanyId,
+        mailbox: route.query.mailbox || '',
       }),
     },
     {

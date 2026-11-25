@@ -11,6 +11,7 @@ const props = defineProps({
   active: { type: Boolean, default: false },
   component: { type: Function, default: null },
   onClick: { type: Function, default: null },
+  heading: { type: Boolean, default: false },
 });
 
 const { resolvePermissions, resolveFeatureFlag } = useSidebarContext();
@@ -28,8 +29,15 @@ const shouldRenderComponent = computed(() => {
     as="li"
     class="py-0.5 ltr:pl-3 rtl:pr-3 rtl:mr-3 ltr:ml-3 relative text-n-slate-11 child-item before:bg-n-slate-4 after:bg-transparent after:border-n-slate-4 before:left-0 rtl:before:right-0"
   >
+    <span
+      v-if="heading"
+      class="block px-2 pt-1.5 text-xxs font-semibold uppercase tracking-wide text-n-slate-10"
+    >
+      {{ label }}
+    </span>
     <component
       :is="to ? 'router-link' : 'button'"
+      v-else
       :to="to || undefined"
       :type="to ? undefined : 'button'"
       :title="label"

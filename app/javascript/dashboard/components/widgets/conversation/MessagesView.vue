@@ -488,6 +488,12 @@ export default {
             class="min-h-[4rem] flex flex-shrink-0 flex-grow-0 items-center flex-auto justify-center max-w-full mt-0 mr-0 mb-1 ml-0 relative first:mt-auto last:mb-0"
           >
             <Spinner v-if="shouldShowSpinner" class="text-n-brand" />
+            <span
+              v-else-if="listLoadingStatus && inbox.email"
+              class="px-3 py-1 rounded-full bg-n-alpha-2 text-xs text-n-slate-11"
+            >
+              {{ $t('CONVERSATION.ARRIVED_AT', { email: inbox.email }) }}
+            </span>
           </li>
         </transition>
       </template>

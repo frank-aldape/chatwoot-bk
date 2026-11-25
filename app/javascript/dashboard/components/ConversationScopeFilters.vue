@@ -1,6 +1,6 @@
 <script setup>
-// "Empresa ▾ / Buzón ▾" chips above the conversation list; each choice opens
-// the matching company or mailbox view.
+// "Empresa: … ▾ / Buzón: … ▾" chips above the conversation list. Both can be
+// set at once: a company view narrowed to one mailbox (?mailbox=).
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
@@ -59,14 +59,10 @@ const activeCompany = computed(() =>
   )
 );
 
-const allItem = action => ({
-  action,
-  value: 'all',
-  label: t('CHAT_LIST.SCOPE_FILTERS.ALL'),
-});
+const allItem = (action, label) => ({ action, value: 'all', label });
 
 const companyItems = computed(() => [
-  allItem('company'),
+  allItem('company', t('CHAT_LIST.SCOPE_FILTERS.ALL')),
   ...companies.value.map(company => ({
     action: 'company',
     value: String(company.id),
@@ -76,7 +72,7 @@ const companyItems = computed(() => [
 ]);
 
 const mailboxItems = computed(() => [
-  allItem('mailbox'),
+  allItem('mailbox', t('CHAT_LIST.SCOPE_FILTERS.ALL_MAILBOXES')),
   ...MAILBOXES.map(mailbox => ({
     action: 'mailbox',
     value: mailbox,
@@ -85,30 +81,39 @@ const mailboxItems = computed(() => [
   })),
 ]);
 
-const companyLabel = computed(
-  () => activeCompany.value?.name || t('CHAT_LIST.SCOPE_FILTERS.COMPANY')
+const companyLabel = computed(() =>
+  t('CHAT_LIST.SCOPE_FILTERS.COMPANY', {
+    name: activeCompany.value?.name || t('CHAT_LIST.SCOPE_FILTERS.ALL'),
+  })
 );
 const mailboxLabel = computed(() =>
-  props.mailbox
-    ? t(mailboxLabelKey(props.mailbox))
-    : t('CHAT_LIST.SCOPE_FILTERS.MAILBOX')
+  t('CHAT_LIST.SCOPE_FILTERS.MAILBOX', {
+    name: props.mailbox
+      ? t(mailboxLabelKey(props.mailbox))
+      : t('CHAT_LIST.SCOPE_FILTERS.ALL_MAILBOXES'),
+  })
 );
 
 const onSelect = ({ action, value }) => {
   openMenu.value = '';
+  const selected = value === 'all' ? '' : value;
+  const companyId = action === 'company' ? selected : activeCompany.value?.id;
+  const mailbox = action === 'mailbox' ? selected : props.mailbox;
   const { accountId } = route.params;
-  if (value === 'all') {
-    router.push({ name: 'home', params: { accountId } });
-  } else if (action === 'company') {
+
+  if (companyId) {
     router.push({
       name: 'managed_company_conversations',
-      params: { accountId, managedCompanyId: value },
+      params: { accountId, managedCompanyId: companyId },
+      query: mailbox ? { mailbox } : {},
     });
-  } else {
+  } else if (mailbox) {
     router.push({
       name: 'mailbox_conversations',
-      params: { accountId, mailbox: value },
+      params: { accountId, mailbox },
     });
+  } else {
+    router.push({ name: 'home', params: { accountId } });
   }
 };
 </script>
@@ -123,7 +128,8 @@ const onSelect = ({ action, value }) => {
     >
       <Button
         :label="companyLabel"
-        icon="i-lucide-landmark"
+        icon="i-lucide-chevron-down"
+        trailing-icon
         size="xs"
         :color="activeCompany ? 'blue' : 'slate'"
         variant="faded"
@@ -154,7 +160,8 @@ const onSelect = ({ action, value }) => {
     >
       <Button
         :label="mailboxLabel"
-        icon="i-lucide-inbox"
+        icon="i-lucide-chevron-down"
+        trailing-icon
         size="xs"
         :color="mailbox ? 'blue' : 'slate'"
         variant="faded"

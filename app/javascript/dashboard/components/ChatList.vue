@@ -381,6 +381,11 @@ const pageTitle = computed(() => {
 
 const pageKicker = computed(() => {
   if (hasAppliedFilters.value) return '';
+  if (hasManagedCompanyScope.value && props.mailbox) {
+    return t('CHAT_LIST.KICKER.COMPANY_MAILBOX', {
+      mailbox: t(mailboxLabelKey(props.mailbox)),
+    });
+  }
   if (props.mailbox) return t('CHAT_LIST.KICKER.MAILBOX');
   if (hasManagedCompanyScope.value) return t('CHAT_LIST.KICKER.COMPANY');
   return '';

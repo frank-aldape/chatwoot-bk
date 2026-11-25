@@ -23,6 +23,8 @@ export const conversationUrl = ({
     url = `accounts/${accountId}/team/${teamId}/conversations/${id}`;
   } else if (managedCompanyId) {
     url = `accounts/${accountId}/managed_companies/${managedCompanyId}/conversations/${id}`;
+    // A company view can be narrowed to one mailbox; keep it while browsing.
+    if (mailbox) url += `?mailbox=${mailbox}`;
   } else if (mailbox) {
     url = `accounts/${accountId}/mailboxes/${mailbox}/conversations/${id}`;
   } else if (foldersId && foldersId !== 0) {
@@ -54,6 +56,7 @@ export const conversationListPageURL = ({
     url = `accounts/${accountId}/team/${teamId}`;
   } else if (managedCompanyId) {
     url = `accounts/${accountId}/managed_companies/${managedCompanyId}`;
+    if (mailbox) url += `?mailbox=${mailbox}`;
   } else if (mailbox) {
     url = `accounts/${accountId}/mailboxes/${mailbox}`;
   } else if (inboxId) {

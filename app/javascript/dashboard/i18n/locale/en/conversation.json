@@ -1,6 +1,7 @@
 {
   "CONVERSATION": {
     "SELECT_A_CONVERSATION": "Selecciona una conversación en el panel izquierdo",
+    "ARRIVED_AT": "Llegó a {email}",
     "CSAT_REPLY_MESSAGE": "Por favor califica la conversación",
     "404": "Lo sentimos, no pudimos encontrar la conversación. Intenta de nuevo",
     "SWITCH_VIEW_LAYOUT": "Cambiar el diseño",

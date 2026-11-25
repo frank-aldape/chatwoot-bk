@@ -12,14 +12,16 @@
     "UNATTENDED_HEADING": "Sin atender",
     "SCOPE_FILTERS": {
       "ALL": "Todas",
-      "COMPANY": "Empresa",
-      "MAILBOX": "Buzón",
+      "ALL_MAILBOXES": "Todos",
+      "COMPANY": "Empresa: {name}",
+      "MAILBOX": "Buzón: {name}",
       "SEARCH_COMPANY": "Buscar empresa…",
       "OLDEST_FIRST": "Más antiguas primero"
     },
     "KICKER": {
       "MAILBOX": "Buzón · todas tus empresas",
-      "COMPANY": "Empresa · todos sus buzones"
+      "COMPANY": "Empresa · todos sus buzones",
+      "COMPANY_MAILBOX": "Empresa · buzón {mailbox}"
     },
     "MANAGED_COMPANY": {
       "FALLBACK_TITLE": "Compañía gestionada",
@@ -162,17 +164,37 @@
     "SENDING": "Enviando"
   },
   "WORKLOAD": {
+    "BACK": "← Volver a la bandeja",
     "TITLE": "Carga por empresa y buzón",
-    "SEARCH": "Buscar empresa…",
+    "SUBTITLE": "Dónde hay conversaciones abiertas en tus {count} empresas. Un clic abre esa cola.",
+    "SEARCH": "Buscar entre {count} empresas",
+    "ONLY_PENDING": "Solo con pendientes",
     "COMPANY": "Empresa",
     "TOTAL": "Total",
     "PIN": "Fijar en el menú lateral",
-    "EMPTY": "No hay conversaciones abiertas.",
+    "EMPTY": "No hay empresas que mostrar.",
+    "EMPTY_CELL": "·",
+    "CELL_LABEL": "{company}, {mailbox}: {count} abiertas",
+    "UNASSIGNED_COUNT": "{count} sin asignar",
+    "FOOTER_PENDING": "Mostrando {shown} empresas con pendientes · {hidden} sin pendientes ocultas",
+    "FOOTER_ALL": "Mostrando {shown} empresas",
     "KPI": {
-      "OPEN": "Abiertas",
+      "OPEN": "Conversaciones abiertas",
       "UNASSIGNED": "Sin asignar",
       "COMPANIES": "Empresas con pendientes",
       "BUSIEST_MAILBOX": "Buzón más cargado"
+    },
+    "KPI_HINT": {
+      "OPEN": "en todas tus bandejas",
+      "UNASSIGNED": "esperando a un agente",
+      "COMPANIES": "de {count} empresas",
+      "BUSIEST_MAILBOX": "{count} abiertas"
+    },
+    "LEGEND": {
+      "TITLE": "Intensidad = conversaciones abiertas:",
+      "LOW": "1–2",
+      "MEDIUM": "3–5",
+      "HIGH": "6 o más"
     }
   }
 }

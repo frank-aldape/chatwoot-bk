@@ -259,7 +259,7 @@ const deleteConversation = () => {
   <div
     class="relative flex items-start flex-grow-0 flex-shrink-0 w-auto max-w-full py-0 border-t-0 border-b-0 border-l-0 border-r-0 border-transparent border-solid cursor-pointer conversation hover:bg-n-alpha-1 dark:hover:bg-n-alpha-3 group"
     :class="{
-      'active animate-card-select bg-n-alpha-1 dark:bg-n-alpha-3 border-n-weak':
+      'active animate-card-select bg-n-blue-2 dark:bg-n-blue-3 border-n-weak':
         isActiveChat,
       'bg-n-slate-2 dark:bg-n-slate-3': selected,
       'px-0': compact,
@@ -314,9 +314,8 @@ const deleteConversation = () => {
       >
         <span
           v-if="managedCompany"
-          class="inline-flex items-center gap-1 max-w-full px-2 py-0.5 rounded-full bg-n-alpha-2 text-n-slate-11 text-xs font-medium"
+          class="inline-flex min-w-0 px-2 py-0.5 rounded-md bg-n-alpha-2 text-n-slate-11 text-xs font-medium"
         >
-          <span class="i-lucide-landmark size-3 flex-shrink-0" />
           <span class="truncate">{{ managedCompany.name }}</span>
         </span>
         <MailboxChip
