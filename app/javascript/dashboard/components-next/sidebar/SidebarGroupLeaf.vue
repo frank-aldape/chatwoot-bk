@@ -41,7 +41,7 @@ const shouldRenderComponent = computed(() => {
       :to="to || undefined"
       :type="to ? undefined : 'button'"
       :title="label"
-      class="flex w-full h-8 items-center gap-2 px-2 py-1 rounded-lg max-w-[9.438rem] text-start hover:bg-gradient-to-r from-transparent via-n-slate-3/70 to-n-slate-3/70 group"
+      class="flex w-full h-8 items-center gap-2 px-2 py-1 rounded-lg max-w-[13.188rem] text-start hover:bg-gradient-to-r from-transparent via-n-slate-3/70 to-n-slate-3/70 group"
       :class="{
         'text-n-blue-text bg-n-alpha-2 active': active,
       }"
