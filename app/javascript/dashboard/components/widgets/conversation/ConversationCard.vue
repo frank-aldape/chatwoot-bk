@@ -66,6 +66,15 @@ const accountId = useMapGetter('getCurrentAccountId');
 const chatMetadata = computed(() => props.chat.meta || {});
 
 const assignee = computed(() => chatMetadata.value.assignee || {});
+// Initials keep room for the company chip; the full name stays in the tooltip.
+const assigneeInitials = computed(() =>
+  (assignee.value.name || '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(word => word[0].toUpperCase())
+    .join('')
+);
 
 const senderId = computed(() => chatMetadata.value.sender?.id);
 
@@ -342,10 +351,11 @@ const deleteConversation = () => {
         >
           <span
             v-if="showAssignee && assignee.name"
-            class="text-n-slate-11 text-xs font-medium leading-3 py-0.5 px-0 inline-flex items-center truncate"
+            :title="assignee.name"
+            class="text-n-slate-11 text-xs font-medium leading-3 py-0.5 px-0 inline-flex items-center flex-shrink-0"
           >
             <span class="i-lucide-user size-3 text-n-slate-11" />
-            {{ assignee.name }}
+            {{ assigneeInitials }}
           </span>
           <PriorityMark :priority="chat.priority" class="flex-shrink-0" />
         </div>
