@@ -1,4 +1,5 @@
 // Base mailbox aliases every company domain gets, in this fixed order.
+// no-reply is send-only: it has no inbox, so it is not listed here.
 export const MAILBOXES = [
   'facturacion',
   'ventas',
@@ -9,11 +10,10 @@ export const MAILBOXES = [
   'operaciones',
   'contabilidad',
   'sistemas',
-  'no-reply',
 ];
 
 export const mailboxLabelKey = mailbox =>
-  `SIDEBAR.MAILBOX_NAMES.${mailbox.toUpperCase().replace('-', '_')}`;
+  `SIDEBAR.MAILBOX_NAMES.${mailbox.toUpperCase()}`;
 
 // Color identity per mailbox, shared by the sidebar dot and the chips.
 const MAILBOX_COLORS = {
