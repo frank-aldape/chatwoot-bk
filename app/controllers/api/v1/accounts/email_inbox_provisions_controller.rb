@@ -13,12 +13,21 @@ class Api::V1::Accounts::EmailInboxProvisionsController < Api::V1::Accounts::Bas
       email: params.require(:email),
       password: params[:password],
       company_name: params[:company_name],
-      dry_run: ActiveModel::Type::Boolean.new.cast(params[:dry_run])
+      dry_run: ActiveModel::Type::Boolean.new.cast(params[:dry_run]),
+      settings: mail_server_settings
     ).perform
 
     render json: { status: result.status, inbox_id: result.inbox&.id, name: result.name, message: result.message },
            status: HTTP_STATUS.fetch(result.status)
   rescue ActiveRecord::RecordInvalid => e
     render json: { status: :invalid, message: e.record.errors.full_messages.join(', ') }, status: :unprocessable_entity
+  end
+
+  private
+
+  # IMAP/SMTP server, ports and encryption as configured on the mail server.
+  def mail_server_settings
+    keys = Inboxes::ProvisionEmailService::SETTING_KEYS
+    params.slice(*keys).permit(*keys).to_h
   end
 end

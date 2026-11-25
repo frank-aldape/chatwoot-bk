@@ -1,6 +1,7 @@
-# Creates the email inbox for a mailbox provisioned on the mail server (Hestia),
-# using the standard settings validated in production: mail.<domain>, IMAP 993
-# over SSL, SMTP 465 over SSL/TLS, login = the address itself.
+# Creates the email inbox for a mailbox provisioned on the mail server (Hestia).
+# Server, ports and encryption come from the mail server (`settings`); anything it
+# leaves out falls back to the standard validated in production: mail.<domain>,
+# IMAP 993 over SSL, SMTP 465 over SSL/TLS. Login is always the address itself.
 #
 # An inbox is never created without its managed company: the company is found
 # by authorized_domain, or created from `company_name` (the legal name the mail
@@ -10,10 +11,12 @@
 # Team links come from the existing mailbox and channel rules, which run on create.
 class Inboxes::ProvisionEmailService
   MAILBOX_PREFIXES = { 'facturacion' => 'FACT' }.freeze
+  SETTING_KEYS = %w[imap_address imap_port imap_enable_ssl smtp_address smtp_port smtp_enable_ssl_tls smtp_enable_starttls_auto
+                    smtp_domain smtp_authentication smtp_openssl_verify_mode].freeze
 
   Result = Struct.new(:status, :inbox, :name, :message, keyword_init: true)
 
-  pattr_initialize [:account!, :email!, :password, :company_name, :dry_run]
+  pattr_initialize [:account!, :email!, :password, :company_name, :dry_run, :settings]
 
   def perform
     return result(:invalid, message: 'email is not a valid address') unless address.match?(URI::MailTo::EMAIL_REGEXP)
@@ -82,15 +85,24 @@ class Inboxes::ProvisionEmailService
   end
 
   def channel_attributes
+    standard_settings.merge(mail_server_settings).merge(
+      email: address, imap_enabled: true, smtp_enabled: true,
+      imap_login: address, imap_password: password, smtp_login: address, smtp_password: password
+    )
+  end
+
+  # nil/blank values are ignored so the mail server only sends what it wants to override; false is kept.
+  def mail_server_settings
+    settings.to_h.stringify_keys.slice(*SETTING_KEYS).reject { |_, value| value.nil? || value == '' }.symbolize_keys
+  end
+
+  def standard_settings
     host = "mail.#{domain}"
     {
-      email: address,
-      imap_enabled: true, imap_address: host, imap_port: 993, imap_enable_ssl: true,
-      imap_login: address, imap_password: password,
-      smtp_enabled: true, smtp_address: host, smtp_port: 465, smtp_domain: domain,
+      imap_address: host, imap_port: 993, imap_enable_ssl: true,
+      smtp_address: host, smtp_port: 465, smtp_domain: domain,
       smtp_enable_ssl_tls: true, smtp_enable_starttls_auto: false,
-      smtp_openssl_verify_mode: 'none', smtp_authentication: 'login',
-      smtp_login: address, smtp_password: password
+      smtp_openssl_verify_mode: 'none', smtp_authentication: 'login'
     }
   end
 
