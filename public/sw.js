@@ -1,5 +1,9 @@
 /* eslint-disable no-restricted-globals, no-console */
 /* globals clients */
+// Take over right away so agents get the current handlers without having to
+// close every Chatwoot tab first.
+self.addEventListener('install', () => self.skipWaiting());
+
 self.addEventListener('activate', event => {
   event.waitUntil(clients.claim());
 });
