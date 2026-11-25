@@ -247,6 +247,10 @@
     "TRIAL_MESSAGE": "días restantes de prueba.",
     "TRAIL_BUTTON": "Comprar ahora",
     "DELETED_USER": "Usuario eliminado",
+    "PUSH_PROMPT": {
+      "MESSAGE": "Activa las notificaciones en este navegador para enterarte de conversaciones y mensajes nuevos.",
+      "ENABLE": "Activar notificaciones"
+    },
     "EMAIL_VERIFICATION_PENDING": "Parece que aún no has verificado tu dirección de correo electrónico. Revisa tu bandeja de entrada para encontrar el correo de verificación.",
     "RESEND_VERIFICATION_MAIL": "Reenviar correo de verificación",
     "EMAIL_VERIFICATION_SENT": "El correo de verificación ha sido enviado. Revisa tu bandeja de entrada.",
@@ -354,8 +358,12 @@
     "MAILBOXES": "Buzones",
     "SHOW_IDLE_MAILBOXES": "Mostrar {count} sin pendientes",
     "HIDE_IDLE_MAILBOXES": "Ocultar sin pendientes",
-    "COMPANIES_WITH_PENDING": "Empresas con pendientes",
-    "VIEW_ALL_COMPANIES": "Ver todas las empresas",
+    "MANAGED_COMPANIES_GROUP": "Empresas",
+    "PINNED_COMPANIES": "Fijadas",
+    "PENDING_COMPANIES": "Con pendientes",
+    "VIEW_ALL_COMPANIES": "Ver las {count} empresas",
+    "GO_TO_PLACEHOLDER": "Ir a empresa o buzón…",
+    "COMMAND_BAR_SHORTCUT": "⌘K",
     "MAILBOX_NAMES": {
       "FACTURACION": "Facturación",
       "VENTAS": "Ventas",

@@ -3,28 +3,14 @@ class NotificationListener < BaseListener
     conversation, account = extract_conversation_and_account(event)
     return if conversation.pending?
 
-    conversation.inbox.members.each do |agent|
-      NotificationBuilder.new(
-        notification_type: 'conversation_creation',
-        user: agent,
-        account: account,
-        primary_actor: conversation
-      ).perform
-    end
+    notify_conversation_creation(conversation, account)
   end
 
   def conversation_created(event)
     conversation, account = extract_conversation_and_account(event)
     return if conversation.pending?
 
-    conversation.inbox.members.each do |agent|
-      NotificationBuilder.new(
-        notification_type: 'conversation_creation',
-        user: agent,
-        account: account,
-        primary_actor: conversation
-      ).perform
-    end
+    notify_conversation_creation(conversation, account)
   end
 
   def assignee_changed(event)
@@ -52,5 +38,21 @@ class NotificationListener < BaseListener
 
     Messages::MentionService.new(message: message).perform
     Messages::NewMessageNotificationService.new(message: message).perform
+  end
+
+  private
+
+  # The inbox roster never holds administrators (they reach every inbox
+  # implicitly), so they are added here. NotificationBuilder still skips anyone
+  # who has not opted in to "conversation created" notifications.
+  def notify_conversation_creation(conversation, account)
+    (conversation.inbox.members + account.administrators).uniq.each do |agent|
+      NotificationBuilder.new(
+        notification_type: 'conversation_creation',
+        user: agent,
+        account: account,
+        primary_actor: conversation
+      ).perform
+    end
   end
 end

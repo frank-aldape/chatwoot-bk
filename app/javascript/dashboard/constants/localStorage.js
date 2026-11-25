@@ -7,4 +7,5 @@ export const LOCAL_STORAGE_KEYS = {
   MESSAGE_REPLY_TO: 'messageReplyTo',
   RECENT_SEARCHES: 'recentSearches',
   MANAGED_COMPANIES_PREFERENCES: 'managedCompaniesPreferences',
+  DISMISSED_PUSH_PROMPT: 'dismissedPushPrompt',
 };
