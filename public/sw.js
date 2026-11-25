@@ -1,10 +1,16 @@
 /* eslint-disable no-restricted-globals, no-console */
 /* globals clients */
+self.addEventListener('activate', event => {
+  event.waitUntil(clients.claim());
+});
+
 self.addEventListener('push', event => {
   let notification = event.data && event.data.json();
 
   event.waitUntil(
     self.registration.showNotification(notification.title, {
+      body: notification.body,
+      icon: '/android-icon-192x192.png',
       tag: notification.tag,
       data: {
         url: notification.url,
@@ -13,25 +19,24 @@ self.addEventListener('push', event => {
   );
 });
 
+// Focus an open Chatwoot tab and route it to the conversation; open one only
+// when none is around.
 self.addEventListener('notificationclick', event => {
-  let notification = event.notification;
+  event.notification.close();
+  const { url } = event.notification.data;
 
   event.waitUntil(
-    clients.matchAll({ type: 'window' }).then(windowClients => {
-      let matchingWindowClients = windowClients.filter(
-        client => client.url === notification.data.url
-      );
-
-      if (matchingWindowClients.length) {
-        let firstWindow = matchingWindowClients[0];
-        if (firstWindow && 'focus' in firstWindow) {
-          firstWindow.focus();
-          return;
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then(windowClients => {
+        const appWindow = windowClients.find(client =>
+          client.url.startsWith(self.location.origin)
+        );
+        if (appWindow) {
+          appWindow.postMessage({ type: 'navigate', url });
+          return appWindow.focus();
         }
-      }
-      if (clients.openWindow) {
-        clients.openWindow(notification.data.url);
-      }
-    })
+        return clients.openWindow(url);
+      })
   );
 });

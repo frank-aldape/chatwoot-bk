@@ -80,13 +80,27 @@ export default {
     this.setLocale(
       this.uiSettings?.locale || window.chatwootConfig.selectedLocale
     );
+    navigator.serviceWorker?.addEventListener(
+      'message',
+      this.onServiceWorkerMessage
+    );
   },
   unmounted() {
+    navigator.serviceWorker?.removeEventListener(
+      'message',
+      this.onServiceWorkerMessage
+    );
     if (this.reconnectService) {
       this.reconnectService.disconnect();
     }
   },
   methods: {
+    // A clicked push notification reuses this tab instead of opening another.
+    onServiceWorkerMessage({ data }) {
+      if (data?.type === 'navigate') {
+        this.$router.push(new URL(data.url).pathname);
+      }
+    },
     initializeColorTheme() {
       setColorTheme(window.matchMedia('(prefers-color-scheme: dark)').matches);
     },
