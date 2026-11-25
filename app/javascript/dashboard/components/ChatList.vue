@@ -103,7 +103,13 @@ const conversationDynamicScroller = ref(null);
 
 provide('contextMenuElementTarget', conversationDynamicScroller);
 
-const activeAssigneeTab = ref(wootConstants.ASSIGNEE_TYPE.ME);
+// Mailbox and company views open on "Todos": the sidebar and workload counts
+// that lead there are for every open conversation, not only mine.
+const scopeAssigneeTab = () =>
+  props.mailbox || props.managedCompanyId
+    ? wootConstants.ASSIGNEE_TYPE.ALL
+    : wootConstants.ASSIGNEE_TYPE.ME;
+const activeAssigneeTab = ref(scopeAssigneeTab());
 const activeStatus = ref(wootConstants.STATUS_TYPE.OPEN);
 const activeSortBy = ref(wootConstants.SORT_BY_TYPE.LAST_ACTIVITY_AT_DESC);
 const showAdvancedFilters = ref(false);
@@ -396,22 +402,9 @@ const pageSubtitle = computed(() => {
     return '';
   }
 
-  if (!managedCompanyInboxSummary.value.totalCount) {
-    return t('CHAT_LIST.MANAGED_COMPANY.NO_VISIBLE_CHANNELS');
-  }
-
-  if (managedCompanyInboxSummary.value.remainingCount > 0) {
-    return t('CHAT_LIST.MANAGED_COMPANY.VISIBLE_CHANNELS_MORE', {
-      count: managedCompanyInboxSummary.value.totalCount,
-      inboxes: managedCompanyInboxSummary.value.names,
-      remaining: managedCompanyInboxSummary.value.remainingCount,
-    });
-  }
-
-  return t('CHAT_LIST.MANAGED_COMPANY.VISIBLE_CHANNELS', {
-    count: managedCompanyInboxSummary.value.totalCount,
-    inboxes: managedCompanyInboxSummary.value.names,
-  });
+  return managedCompanyInboxSummary.value.totalCount
+    ? ''
+    : t('CHAT_LIST.MANAGED_COMPANY.NO_VISIBLE_CHANNELS');
 });
 
 const emptyStateMessage = computed(() => {
@@ -1162,12 +1155,11 @@ watch(
   () => resetAndFetchData()
 );
 watch(
-  computed(() => props.managedCompanyId),
-  () => resetAndFetchData()
-);
-watch(
-  computed(() => props.mailbox),
-  () => resetAndFetchData()
+  computed(() => [props.managedCompanyId, props.mailbox]),
+  () => {
+    activeAssigneeTab.value = scopeAssigneeTab();
+    resetAndFetchData();
+  }
 );
 watch(
   computed(() => props.label),

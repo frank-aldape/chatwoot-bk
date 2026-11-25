@@ -25,8 +25,6 @@
     },
     "MANAGED_COMPANY": {
       "FALLBACK_TITLE": "Compañía gestionada",
-      "VISIBLE_CHANNELS": "Canales visibles ({count}): {inboxes}",
-      "VISIBLE_CHANNELS_MORE": "Canales visibles ({count}): {inboxes} +{remaining} más",
       "NO_VISIBLE_CHANNELS": "Esta compañía no tiene inboxes visibles para las asignaciones de tu equipo actual.",
       "EMPTY": "No hay conversaciones en los inboxes visibles para esta compañía."
     },

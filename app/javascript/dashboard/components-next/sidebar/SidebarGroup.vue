@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useSidebarContext } from './provider';
 import { useRoute } from 'vue-router';
 import Policy from 'dashboard/components/policy.vue';
@@ -110,6 +110,11 @@ const hasActiveChild = computed(() => {
 const toggleTrigger = () => {
   setExpandedItem(props.name);
 };
+
+// Open the group the current page belongs to, so its links show on arrival.
+onMounted(() => {
+  if (hasActiveChild.value && !expandedItem.value) setExpandedItem(props.name);
+});
 </script>
 
 <!-- eslint-disable-next-line vue/no-root-v-if -->
@@ -144,6 +149,7 @@ const toggleTrigger = () => {
           :label="child.label"
           :icon="child.icon"
           :children="child.children"
+          :default-expanded="child.defaultExpanded"
           :is-expanded="isExpanded"
           :active-child="activeChild"
         />

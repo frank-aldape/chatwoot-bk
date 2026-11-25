@@ -46,7 +46,7 @@ const dismiss = () => {
 <template>
   <Banner
     v-if="shouldShowBanner"
-    color-scheme="primary"
+    color-scheme="secondary"
     :banner-message="t('APP_GLOBAL.PUSH_PROMPT.MESSAGE')"
     :action-button-label="t('APP_GLOBAL.PUSH_PROMPT.ENABLE')"
     action-button-icon="i-lucide-bell-ring"

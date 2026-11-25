@@ -489,7 +489,7 @@ export default {
           >
             <Spinner v-if="shouldShowSpinner" class="text-n-brand" />
             <span
-              v-else-if="listLoadingStatus && inbox.email"
+              v-else-if="inbox.email"
               class="px-3 py-1 rounded-full bg-n-alpha-2 text-xs text-n-slate-11"
             >
               {{ $t('CONVERSATION.ARRIVED_AT', { email: inbox.email }) }}

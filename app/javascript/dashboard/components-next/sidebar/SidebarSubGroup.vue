@@ -12,6 +12,7 @@ const props = defineProps({
   icon: { type: [Object, String], required: true },
   children: { type: Array, default: undefined },
   activeChild: { type: Object, default: undefined },
+  defaultExpanded: { type: Boolean, default: false },
 });
 
 const { isAllowed } = useSidebarContext();
@@ -31,7 +32,7 @@ const containsActiveChild = computed(() =>
   accessibleItems.value.some(child => child.name === props.activeChild?.name)
 );
 
-const isSubGroupExpanded = ref(false);
+const isSubGroupExpanded = ref(props.defaultExpanded);
 
 watch(
   () => props.isExpanded,

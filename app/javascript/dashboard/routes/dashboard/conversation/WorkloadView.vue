@@ -268,7 +268,7 @@ const homeRoute = computed(() => ({
                 <th
                   class="px-4 py-2 font-semibold border-b text-start border-n-weak whitespace-nowrap"
                 >
-                  <span class="inline-flex items-center gap-2 max-w-[18rem]">
+                  <span class="inline-flex items-center gap-2 max-w-[26rem]">
                     <button
                       type="button"
                       :class="

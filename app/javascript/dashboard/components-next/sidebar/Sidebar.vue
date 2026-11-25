@@ -321,6 +321,7 @@ const menuItems = computed(() => {
         },
         {
           name: 'Mailboxes',
+          defaultExpanded: true,
           label: t('SIDEBAR.MAILBOXES'),
           icon: 'i-lucide-inbox',
           activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
@@ -328,6 +329,7 @@ const menuItems = computed(() => {
         },
         {
           name: 'Managed Companies',
+          defaultExpanded: true,
           label: t('SIDEBAR.MANAGED_COMPANIES_GROUP'),
           icon: 'i-lucide-building-2',
           activeOn: [
@@ -821,7 +823,7 @@ const menuItems = computed(() => {
       <div class="flex gap-2 px-2">
         <button
           type="button"
-          class="flex flex-1 min-w-0 items-center gap-1.5 h-7 px-2 rounded-lg bg-n-solid-3 dark:bg-n-black/30 outline outline-1 outline-n-weak text-n-slate-10 hover:text-n-slate-12"
+          class="flex flex-1 w-0 !min-w-0 overflow-hidden items-center gap-1.5 h-7 px-2 rounded-lg bg-n-solid-3 dark:bg-n-black/30 outline outline-1 outline-n-weak text-n-slate-10 hover:text-n-slate-12"
           @click="openCommandBar"
         >
           <span class="i-lucide-search size-3.5 flex-shrink-0" />
