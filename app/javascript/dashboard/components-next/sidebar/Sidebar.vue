@@ -5,6 +5,7 @@ import { useAccount } from 'dashboard/composables/useAccount';
 import { useMapGetter } from 'dashboard/composables/store';
 import { useStore } from 'vuex';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import { useSidebarKeyboardShortcuts } from './useSidebarKeyboardShortcuts';
 import { vOnClickOutside } from '@vueuse/components';
 import { emitter } from 'shared/helpers/mitt';
@@ -16,7 +17,11 @@ import SidebarProfileMenu from './SidebarProfileMenu.vue';
 import SidebarChangelogCard from './SidebarChangelogCard.vue';
 import ChannelLeaf from './ChannelLeaf.vue';
 import CountLeaf from './CountLeaf.vue';
-import { MAILBOXES, mailboxLabelKey } from 'dashboard/constants/mailboxes';
+import {
+  MAILBOXES,
+  mailboxColors,
+  mailboxLabelKey,
+} from 'dashboard/constants/mailboxes';
 import ConversationApi from 'dashboard/api/inbox/conversation';
 import { useIntervalFn } from '@vueuse/core';
 import { useUISettings } from 'dashboard/composables/useUISettings';
@@ -41,6 +46,7 @@ const emit = defineEmits([
 const { accountScopedRoute, isOnChatwootCloud } = useAccount();
 const store = useStore();
 const { t } = useI18n();
+const route = useRoute();
 
 const isACustomBrandedInstance = useMapGetter(
   'globalConfig/isACustomBrandedInstance'
@@ -100,23 +106,58 @@ const fetchSidebarCounts = async () => {
 fetchSidebarCounts();
 useIntervalFn(fetchSidebarCounts, 60000);
 
-const countLeaf = (count, icon) => leafProps =>
+const countLeaf = (count, icon, dot) => leafProps =>
   h(CountLeaf, {
     label: leafProps.label,
     active: leafProps.active,
     icon,
+    dot,
     count,
   });
 
-const mailboxSidebarItems = computed(() =>
-  MAILBOXES.map(mailbox => ({
+// Mailboxes with nothing open stay folded behind a toggle, like the mockup.
+const showIdleMailboxes = ref(false);
+const mailboxSidebarItems = computed(() => {
+  const countOf = mailbox => sidebarCounts.value.mailboxes[mailbox] || 0;
+  const idleCount = MAILBOXES.filter(mailbox => !countOf(mailbox)).length;
+  const items = MAILBOXES.filter(
+    mailbox =>
+      showIdleMailboxes.value ||
+      countOf(mailbox) ||
+      route.params.mailbox === mailbox
+  ).map(mailbox => ({
     name: `mailbox-${mailbox}`,
     label: t(mailboxLabelKey(mailbox)),
     to: accountScopedRoute('mailbox_conversations', { mailbox }),
     activeOn: ['mailbox_conversations', 'conversations_through_mailbox'],
-    component: countLeaf(sidebarCounts.value.mailboxes[mailbox] || 0),
-  }))
-);
+    component: countLeaf(
+      countOf(mailbox),
+      undefined,
+      mailboxColors(mailbox).dot
+    ),
+  }));
+  if (!idleCount) return items;
+
+  return [
+    ...items,
+    {
+      name: 'mailbox-toggle-idle',
+      label: showIdleMailboxes.value
+        ? t('SIDEBAR.HIDE_IDLE_MAILBOXES')
+        : t('SIDEBAR.SHOW_IDLE_MAILBOXES', { count: idleCount }),
+      to: '',
+      onClick: () => {
+        showIdleMailboxes.value = !showIdleMailboxes.value;
+      },
+      component: leafProps =>
+        h(
+          'span',
+          { class: 'flex-1 truncate text-xs font-medium text-n-blue-text' },
+          leafProps.label
+        ),
+    },
+  ];
+});
 
 // Pinned companies first (even with nothing open), then the busiest ones, so 100+ stay short.
 const { uiSettings } = useUISettings();
@@ -205,16 +246,6 @@ const reportRoutes = computed(() => newReportRoutes());
 
 const menuItems = computed(() => {
   return [
-    {
-      name: 'Inbox',
-      label: t('SIDEBAR.INBOX'),
-      icon: 'i-lucide-inbox',
-      to: accountScopedRoute('inbox_view'),
-      activeOn: ['inbox_view', 'inbox_view_conversation'],
-      getterKeys: {
-        count: 'notifications/getUnreadCount',
-      },
-    },
     {
       name: 'Conversation',
       label: t('SIDEBAR.CONVERSATIONS'),

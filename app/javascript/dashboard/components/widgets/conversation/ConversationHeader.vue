@@ -5,6 +5,8 @@ import { useStore } from 'vuex';
 import { useElementSize } from '@vueuse/core';
 import BackButton from '../BackButton.vue';
 import InboxName from '../InboxName.vue';
+import MailboxChip from 'dashboard/components-next/mailbox/MailboxChip.vue';
+import { mailboxOfEmail } from 'dashboard/constants/mailboxes';
 import MoreActions from './MoreActions.vue';
 import Avatar from 'next/avatar/Avatar.vue';
 import SLACardLabel from './components/SLACardLabel.vue';
@@ -97,6 +99,7 @@ const inbox = computed(() => {
 });
 
 const managedCompany = computed(() => inbox.value?.managed_company || null);
+const headerMailbox = computed(() => mailboxOfEmail(inbox.value?.email));
 
 const hasMultipleInboxes = computed(
   () => store.getters['inboxes/getInboxes'].length > 1
@@ -173,7 +176,12 @@ const takeConversation = async () => {
             />
             <span class="truncate">{{ managedCompany.name }}</span>
           </span>
-          <InboxName v-if="hasMultipleInboxes" :inbox="inbox" class="!mx-0" />
+          <MailboxChip v-if="headerMailbox" :mailbox="headerMailbox" icon />
+          <InboxName
+            v-else-if="hasMultipleInboxes"
+            :inbox="inbox"
+            class="!mx-0"
+          />
           <span v-if="isSnoozed" class="font-medium text-n-amber-10">
             {{ snoozedDisplayText }}
           </span>
@@ -195,6 +203,8 @@ const takeConversation = async () => {
         :label="$t('CONVERSATION.HEADER.TAKE_CONVERSATION')"
         icon="i-lucide-hand"
         size="sm"
+        variant="outline"
+        color="slate"
         @click="takeConversation"
       />
       <MoreActions :conversation-id="currentChat.id" />

@@ -5,6 +5,7 @@ import Icon from 'next/icon/Icon.vue';
 defineProps({
   label: { type: String, required: true },
   icon: { type: String, default: '' },
+  dot: { type: String, default: '' },
   active: { type: Boolean, default: false },
   count: { type: Number, default: 0 },
 });
@@ -12,6 +13,11 @@ defineProps({
 
 <template>
   <Icon v-if="icon" :icon="icon" class="size-4 inline-block flex-shrink-0" />
+  <span
+    v-else-if="dot"
+    class="size-2 rounded-full flex-shrink-0"
+    :class="dot"
+  />
   <div class="flex-1 truncate min-w-0" :class="{ 'text-n-slate-10': !count }">
     {{ label }}
   </div>

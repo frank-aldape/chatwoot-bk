@@ -209,7 +209,7 @@
       "": "",
       "EMAIL_HEAD": {
         "TO": "PARA",
-        "FROM": "Respondiendo desde {email}",
+        "FROM": "Respondiendo desde",
         "ADD_BCC": "Agregar CCO",
         "CC": {
           "LABEL": "CC",

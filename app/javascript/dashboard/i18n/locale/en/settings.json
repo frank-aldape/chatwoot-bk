@@ -352,6 +352,8 @@
     "TEAMS": "Equipos",
     "MANAGED_COMPANIES": "Compañías",
     "MAILBOXES": "Buzones",
+    "SHOW_IDLE_MAILBOXES": "Mostrar {count} sin pendientes",
+    "HIDE_IDLE_MAILBOXES": "Ocultar sin pendientes",
     "COMPANIES_WITH_PENDING": "Empresas con pendientes",
     "VIEW_ALL_COMPANIES": "Ver todas las empresas",
     "MAILBOX_NAMES": {

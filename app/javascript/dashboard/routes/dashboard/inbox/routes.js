@@ -1,7 +1,6 @@
 import { frontendURL } from 'dashboard/helper/URLHelper';
 import InboxListView from './InboxList.vue';
 import InboxDetailView from './InboxView.vue';
-import InboxEmptyStateView from './InboxEmptyState.vue';
 import {
   ROLES,
   CONVERSATION_PERMISSIONS,
@@ -15,7 +14,11 @@ export const routes = [
       {
         path: '',
         name: 'inbox_view',
-        component: InboxEmptyStateView,
+        // "Mi bandeja" is hidden; old links land on all conversations.
+        redirect: to => ({
+          name: 'home',
+          params: { accountId: to.params.accountId },
+        }),
         meta: {
           permissions: [...ROLES, ...CONVERSATION_PERMISSIONS],
         },

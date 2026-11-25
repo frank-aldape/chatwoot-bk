@@ -7,6 +7,8 @@ import { frontendURL, conversationUrl } from 'dashboard/helper/URLHelper';
 import Avatar from 'next/avatar/Avatar.vue';
 import MessagePreview from './MessagePreview.vue';
 import InboxName from '../InboxName.vue';
+import MailboxChip from 'dashboard/components-next/mailbox/MailboxChip.vue';
+import { mailboxOfEmail } from 'dashboard/constants/mailboxes';
 import ConversationContextMenu from './contextMenu/Index.vue';
 import TimeAgo from 'dashboard/components/ui/TimeAgo.vue';
 import CardLabels from './conversationCardComponents/CardLabels.vue';
@@ -97,6 +99,7 @@ const inbox = computed(() => {
 });
 
 const managedCompany = computed(() => inbox.value?.managed_company || null);
+const cardMailbox = computed(() => mailboxOfEmail(inbox.value?.email));
 
 const showInboxName = computed(() => {
   return (
@@ -106,9 +109,22 @@ const showInboxName = computed(() => {
   );
 });
 
+// The colored mailbox chip replaces the inbox name for base mailboxes.
+const showInboxLabel = computed(
+  () => showInboxName.value && !cardMailbox.value
+);
+
+// Open conversations waiting on us for over an hour get a red timestamp.
+const isWaitingLong = computed(
+  () =>
+    props.chat.waiting_since > 0 &&
+    Date.now() / 1000 - props.chat.waiting_since > 3600
+);
+
 const showMetaSection = computed(() => {
   return (
     showInboxName.value ||
+    cardMailbox.value ||
     managedCompany.value?.name ||
     (props.showAssignee && assignee.value.name) ||
     props.chat.priority
@@ -263,7 +279,7 @@ const deleteConversation = () => {
         :src="currentContact.thumbnail"
         :size="32"
         :status="currentContact.availability_status"
-        :class="!showInboxName ? 'mt-4' : 'mt-8'"
+        :class="showMetaSection ? 'mt-8' : 'mt-4'"
         hide-offline-status
         rounded-full
       >
@@ -303,11 +319,20 @@ const deleteConversation = () => {
           <span class="i-lucide-landmark size-3 flex-shrink-0" />
           <span class="truncate">{{ managedCompany.name }}</span>
         </span>
-        <InboxName v-if="showInboxName" :inbox="inbox" class="flex-1 min-w-0" />
+        <MailboxChip
+          v-if="cardMailbox"
+          :mailbox="cardMailbox"
+          class="flex-shrink-0"
+        />
+        <InboxName
+          v-if="showInboxLabel"
+          :inbox="inbox"
+          class="flex-1 min-w-0"
+        />
         <div
           class="flex items-center gap-2 flex-shrink-0"
           :class="{
-            'flex-1 justify-between': !showInboxName,
+            'flex-1 justify-between': !showInboxLabel,
           }"
         >
           <span
@@ -361,6 +386,7 @@ const deleteConversation = () => {
           <TimeAgo
             :last-activity-timestamp="chat.timestamp"
             :created-at-timestamp="chat.created_at"
+            :class="{ 'font-semibold !text-n-ruby-11': isWaitingLong }"
           />
         </span>
         <span

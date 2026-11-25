@@ -2,10 +2,13 @@
 import { validEmailsByComma } from './helpers/emailHeadHelper';
 import { useVuelidate } from '@vuelidate/core';
 import ButtonV4 from 'dashboard/components-next/button/Button.vue';
+import MailboxChip from 'dashboard/components-next/mailbox/MailboxChip.vue';
+import { mailboxOfEmail } from 'dashboard/constants/mailboxes';
 
 export default {
   components: {
     ButtonV4,
+    MailboxChip,
   },
   props: {
     fromEmail: {
@@ -36,6 +39,11 @@ export default {
       bccEmailsVal: '',
       toEmailsVal: '',
     };
+  },
+  computed: {
+    fromMailbox() {
+      return mailboxOfEmail(this.fromEmail);
+    },
   },
   watch: {
     bccEmails(newVal) {
@@ -94,12 +102,12 @@ export default {
   <div>
     <div
       v-if="fromEmail"
-      class="flex items-center gap-1 py-1 text-xs text-n-slate-11 border-b border-n-weak"
+      class="flex items-center gap-2 py-1 text-xs text-n-slate-11 border-b border-n-weak"
     >
-      <span class="i-lucide-send size-3 flex-shrink-0" />
-      <span class="truncate">
-        {{ $t('CONVERSATION.REPLYBOX.EMAIL_HEAD.FROM', { email: fromEmail }) }}
+      <span class="flex-shrink-0">
+        {{ $t('CONVERSATION.REPLYBOX.EMAIL_HEAD.FROM') }}
       </span>
+      <MailboxChip :mailbox="fromMailbox" :label="fromEmail" icon />
     </div>
     <div v-if="toEmails">
       <div class="input-group small" :class="{ error: v$.toEmailsVal.$error }">

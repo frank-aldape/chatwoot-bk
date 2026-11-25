@@ -141,8 +141,9 @@ useEmitter(CMD_RESOLVE_CONVERSATION, onCmdResolveConversation);
       <Button
         v-if="isOpen"
         :label="t('CONVERSATION.HEADER.RESOLVE_ACTION')"
+        icon="i-lucide-check"
         size="sm"
-        color="slate"
+        color="teal"
         no-animation
         class="ltr:rounded-r-none rtl:rounded-l-none !outline-0"
         :is-loading="isLoading"
@@ -175,7 +176,7 @@ useEmitter(CMD_RESOLVE_CONVERSATION, onCmdResolveConversation);
         size="sm"
         no-animation
         class="ltr:rounded-l-none rtl:rounded-r-none !outline-0"
-        color="slate"
+        :color="isOpen ? 'teal' : 'slate'"
         trailing-icon
         :aria-label="$t('CONVERSATION.HEADER.MORE_ACTIONS')"
         @click="openDropdown"

@@ -23,6 +23,7 @@ import {
 import { DynamicScroller, DynamicScrollerItem } from 'vue-virtual-scroller';
 import ChatListHeader from './ChatListHeader.vue';
 import ConversationScopeFilters from './ConversationScopeFilters.vue';
+import { mailboxLabelKey } from 'dashboard/constants/mailboxes';
 import Dialog from 'dashboard/components-next/dialog/Dialog.vue';
 import ConversationFilter from 'next/filter/ConversationFilter.vue';
 import ConversationActiveFiltersPreview from 'next/filter/ConversationActiveFiltersPreview.vue';
@@ -91,7 +92,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['conversationLoad']);
-const { uiSettings } = useUISettings();
+const { uiSettings, updateUISettings } = useUISettings();
 const { t } = useI18n();
 const router = useRouter();
 const route = useRoute();
@@ -358,7 +359,7 @@ const pageTitle = computed(() => {
     return t('CHAT_LIST.MANAGED_COMPANY.FALLBACK_TITLE');
   }
   if (props.mailbox) {
-    return t('CHAT_LIST.MAILBOX_TITLE', { mailbox: props.mailbox });
+    return t(mailboxLabelKey(props.mailbox));
   }
   if (props.label) {
     return `#${props.label}`;
@@ -376,6 +377,13 @@ const pageTitle = computed(() => {
     return activeFolder.value.name;
   }
   return t('CHAT_LIST.TAB_HEADING');
+});
+
+const pageKicker = computed(() => {
+  if (hasAppliedFilters.value) return '';
+  if (props.mailbox) return t('CHAT_LIST.KICKER.MAILBOX');
+  if (hasManagedCompanyScope.value) return t('CHAT_LIST.KICKER.COMPANY');
+  return '';
 });
 
 const pageSubtitle = computed(() => {
@@ -932,6 +940,21 @@ function updateAssigneeTab(selectedTab) {
   }
 }
 
+const isOldestFirst = computed(
+  () => activeSortBy.value === wootConstants.SORT_BY_TYPE.WAITING_SINCE_ASC
+);
+
+function toggleOldestFirst() {
+  const { WAITING_SINCE_ASC, LAST_ACTIVITY_AT_DESC } =
+    wootConstants.SORT_BY_TYPE;
+  const value = isOldestFirst.value ? LAST_ACTIVITY_AT_DESC : WAITING_SINCE_ASC;
+  store.dispatch('setChatSortFilter', value);
+  updateUISettings({
+    conversations_filter_by: { status: activeStatus.value, order_by: value },
+  });
+  onBasicFilterChange(value, 'sort');
+}
+
 function onBasicFilterChange(value, type) {
   if (type === 'status') {
     activeStatus.value = value;
@@ -1179,6 +1202,7 @@ watch(conversationFilters, (newVal, oldVal) => {
     <slot />
     <ChatListHeader
       :page-title="pageTitle"
+      :page-kicker="pageKicker"
       :page-subtitle="pageSubtitle"
       :has-applied-filters="hasAppliedFilters"
       :has-active-folders="hasActiveFolders"
@@ -1230,6 +1254,8 @@ watch(conversationFilters, (newVal, oldVal) => {
     <ConversationScopeFilters
       :managed-company-id="managedCompanyId"
       :mailbox="mailbox"
+      :oldest-first="isOldestFirst"
+      @toggle-oldest-first="toggleOldestFirst"
     />
 
     <TeleportWithDirection

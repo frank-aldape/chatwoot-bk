@@ -14,7 +14,10 @@ import DropdownMenu from 'dashboard/components-next/dropdown-menu/DropdownMenu.v
 const props = defineProps({
   managedCompanyId: { type: [String, Number], default: 0 },
   mailbox: { type: String, default: '' },
+  oldestFirst: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(['toggleOldestFirst']);
 
 const { t } = useI18n();
 const route = useRoute();
@@ -111,7 +114,9 @@ const onSelect = ({ action, value }) => {
 </script>
 
 <template>
-  <div class="flex items-center gap-2 px-4 py-2 border-b border-n-weak">
+  <div
+    class="flex flex-wrap items-center gap-2 px-4 py-2 border-b border-n-weak"
+  >
     <div
       v-on-click-outside="() => openMenu === 'company' && toggleMenu('company')"
       class="relative min-w-0"
@@ -162,5 +167,14 @@ const onSelect = ({ action, value }) => {
         @action="onSelect"
       />
     </div>
+    <Button
+      :label="$t('CHAT_LIST.SCOPE_FILTERS.OLDEST_FIRST')"
+      icon="i-lucide-arrow-up-narrow-wide"
+      size="xs"
+      :color="oldestFirst ? 'blue' : 'slate'"
+      variant="faded"
+      class="flex-shrink-0"
+      @click="emit('toggleOldestFirst')"
+    />
   </div>
 </template>

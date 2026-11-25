@@ -14,9 +14,13 @@
       "ALL": "Todas",
       "COMPANY": "Empresa",
       "MAILBOX": "Buzón",
-      "SEARCH_COMPANY": "Buscar empresa…"
+      "SEARCH_COMPANY": "Buscar empresa…",
+      "OLDEST_FIRST": "Más antiguas primero"
     },
-    "MAILBOX_TITLE": "Buzón: {mailbox}",
+    "KICKER": {
+      "MAILBOX": "Buzón · todas tus empresas",
+      "COMPANY": "Empresa · todos sus buzones"
+    },
     "MANAGED_COMPANY": {
       "FALLBACK_TITLE": "Compañía gestionada",
       "VISIBLE_CHANNELS": "Canales visibles ({count}): {inboxes}",

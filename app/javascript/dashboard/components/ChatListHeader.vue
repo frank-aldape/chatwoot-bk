@@ -10,6 +10,7 @@ import NextButton from 'dashboard/components-next/button/Button.vue';
 
 const props = defineProps({
   pageTitle: { type: String, required: true },
+  pageKicker: { type: String, default: '' },
   pageSubtitle: { type: String, default: '' },
   hasAppliedFilters: { type: Boolean, required: true },
   hasActiveFolders: { type: Boolean, required: true },
@@ -58,13 +59,19 @@ const toggleConversationLayout = () => {
 
 <template>
   <div
-    class="flex items-center justify-between gap-2 px-3 h-12"
+    class="flex items-center justify-between gap-2 px-3 py-1.5 min-h-12"
     :class="{
       'border-b border-n-strong': hasAppliedFiltersOrActiveFolders,
     }"
   >
     <div class="flex items-center min-w-0">
       <div class="min-w-0">
+        <p
+          v-if="pageKicker"
+          class="text-xxs font-semibold uppercase tracking-wide text-n-slate-10 truncate"
+        >
+          {{ pageKicker }}
+        </p>
         <div class="flex items-center min-w-0">
           <h1
             class="text-base font-medium truncate text-n-slate-12"
