@@ -190,9 +190,9 @@
     },
     "LEGEND": {
       "TITLE": "Intensidad = conversaciones abiertas:",
-      "LOW": "1–2",
-      "MEDIUM": "3–5",
-      "HIGH": "6 o más"
+      "LOW": "1–5",
+      "MEDIUM": "6–25",
+      "HIGH": "26 o más"
     }
   }
 }
