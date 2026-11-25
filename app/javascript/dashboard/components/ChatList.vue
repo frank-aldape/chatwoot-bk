@@ -940,6 +940,15 @@ function updateAssigneeTab(selectedTab) {
   }
 }
 
+function onBasicFilterChange(value, type) {
+  if (type === 'status') {
+    activeStatus.value = value;
+  } else {
+    activeSortBy.value = value;
+  }
+  resetAndFetchData();
+}
+
 const isOldestFirst = computed(
   () => activeSortBy.value === wootConstants.SORT_BY_TYPE.WAITING_SINCE_ASC
 );
@@ -953,15 +962,6 @@ function toggleOldestFirst() {
     conversations_filter_by: { status: activeStatus.value, order_by: value },
   });
   onBasicFilterChange(value, 'sort');
-}
-
-function onBasicFilterChange(value, type) {
-  if (type === 'status') {
-    activeStatus.value = value;
-  } else {
-    activeSortBy.value = value;
-  }
-  resetAndFetchData();
 }
 
 function openLastSavedItemInFolder() {
