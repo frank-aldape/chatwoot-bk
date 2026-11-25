@@ -3,11 +3,7 @@ const MINUTE_IN_MILLI_SECONDS = 60000;
 const HOUR_IN_MILLI_SECONDS = MINUTE_IN_MILLI_SECONDS * 60;
 const DAY_IN_MILLI_SECONDS = HOUR_IN_MILLI_SECONDS * 24;
 
-import {
-  dynamicTime,
-  dateFormat,
-  shortTimestamp,
-} from 'shared/helpers/timeHelper';
+import { dynamicTime, dateFormat } from 'shared/helpers/timeHelper';
 
 export default {
   name: 'TimeAgo',
@@ -33,11 +29,28 @@ export default {
     };
   },
   computed: {
-    lastActivityTime() {
-      return shortTimestamp(this.lastActivityAtTimeAgo);
-    },
-    createdAtTime() {
-      return shortTimestamp(this.createdAtTimeAgo);
+    // Mail-client style, from the last activity: the hour today, "ayer", the
+    // weekday within a week, then the date. The tooltip keeps both timestamps.
+    displayTime() {
+      const locale = this.$i18n.locale.replace('_', '-');
+      const date = new Date(this.lastActivityTimestamp * 1000);
+      const startOfToday = new Date().setHours(0, 0, 0, 0);
+      const daysAgo = Math.ceil((startOfToday - date) / DAY_IN_MILLI_SECONDS);
+      const format = options =>
+        new Intl.DateTimeFormat(locale, options).format(date);
+
+      if (daysAgo <= 0) return format({ hour: 'numeric', minute: '2-digit' });
+      if (daysAgo === 1) {
+        return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(
+          -1,
+          'day'
+        );
+      }
+      if (daysAgo < 7) return format({ weekday: 'short' });
+      if (date.getFullYear() === new Date().getFullYear()) {
+        return format({ day: 'numeric', month: 'short' });
+      }
+      return format({ day: '2-digit', month: '2-digit', year: '2-digit' });
     },
     createdAt() {
       const createdTimeDiff = Date.now() - this.createdAtTimestamp * 1000;
@@ -115,6 +128,6 @@ export default {
     }"
     class="ml-auto leading-4 text-xxs text-n-slate-10 hover:text-n-slate-11"
   >
-    <span>{{ `${createdAtTime} • ${lastActivityTime}` }}</span>
+    <span>{{ displayTime }}</span>
   </div>
 </template>
